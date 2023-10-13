@@ -92,9 +92,8 @@ def main(
     if len(patches) > 0:
         with open(patchpath, "w") as f:
             f.write(
-                json.dumps(
+                yaml.dump_all(
                     patches,
-                    indent=2,
                 )
             )
 
