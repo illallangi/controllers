@@ -75,8 +75,6 @@ def main(
         )
         return
 
-    patches = []
-
     for binding in json.load(context):
         for obj in [b["object"] for b in binding.get("objects", [binding])]:
             patch = dotemplate(
@@ -87,15 +85,13 @@ def main(
                 debugpath,
             )
             if patch is not None:
-                patches.append(patch)
-
-    if len(patches) > 0:
-        with open(patchpath, "w") as f:
-            f.write(
-                yaml.dump_all(
-                    patches,
-                )
-            )
+                with open(patchpath, "a") as f:
+                    f.write(
+                        json.dumps(
+                            patch,
+                            indent=2,
+                        )
+                    )
 
 def dotemplate(
     binding,
