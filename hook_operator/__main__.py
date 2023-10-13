@@ -89,7 +89,7 @@ def main(
             if patch is not None:
                 patches.append(patch)
 
-    if patches.count() > 0:
+    if len(patches) > 0:
         with open(patchpath, "w") as f:
             f.write(
                 json.dumps(
