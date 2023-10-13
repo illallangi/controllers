@@ -1,0 +1,54 @@
+extends: default
+rules:
+  braces:
+    forbid: non-empty
+  brackets:
+    forbid: non-empty
+  colons:
+    max-spaces-after: 1
+    max-spaces-before: 0
+  commas:
+    max-spaces-after: 1
+    max-spaces-before: 0
+    min-spaces-after: 1
+  comments:
+    ignore-shebangs: true
+    min-spaces-from-content: 2
+    require-starting-space: true
+  comments-indentation: {}
+  document-end:
+    present: false
+  document-start:
+    present: false
+  empty-lines:
+    max: 0
+  empty-values:
+    forbid-in-block-mappings: true
+    forbid-in-flow-mappings: true
+  hyphens:
+    max-spaces-after: 1
+  indentation:
+    check-multi-line-strings: false
+    indent-sequences: false
+    spaces: 2
+  key-duplicates: {}
+  key-ordering: {}
+  line-length:
+    max: 1600
+  new-line-at-end-of-file: {}
+  new-lines:
+    type: unix
+  octal-values:
+    forbid-explicit-octal: true
+    forbid-implicit-octal: true
+  quoted-strings:
+    extra-allowed: []
+    extra-required: []
+    quote-type: single
+    required: false
+  trailing-spaces: {}
+  truthy:
+    allowed-values:
+    - true
+    - false
+    check-keys: false
