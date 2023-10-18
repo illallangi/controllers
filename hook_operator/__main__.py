@@ -104,7 +104,7 @@ def dotemplate(
         **_object,
         'metadata': {
             "labels": {
-                k: v
+                k: (v if v is not None else '')
                 for k, v in
                 {
                     **_object.get("metadata", {}).get("labels", {}),
@@ -114,7 +114,6 @@ def dotemplate(
                     "app.kubernetes.io/managed-by": options.get("operator", "operator.illallangi.enterprises").lower(),
                     "app.kubernetes.io/name": _object.get("metadata", {}).get("labels", {}).get("app.kubernetes.io/name", _object.get("kind", "")).lower(),
                 }.items()
-                if v is not None and v != ""
             },
             "name": "-".join(
                 unique_justseen(
@@ -142,7 +141,7 @@ def dotemplate(
         },
         'selector': 
         {
-            k: v
+            k: (v if v is not None else '')
             for k, v in
             {
                 "app.kubernetes.io/class": _object.get("metadata", {}).get("labels", {}).get("app.kubernetes.io/class", "").lower(),
@@ -150,7 +149,6 @@ def dotemplate(
                 "app.kubernetes.io/instance": _object.get("metadata", {}).get("labels", {}).get("app.kubernetes.io/instance", _object.get("metadata", {}).get("name")).lower(),
                 "app.kubernetes.io/name": _object.get("metadata", {}).get("labels", {}).get("app.kubernetes.io/name", _object.get("kind", "")).lower(),
             }.items()
-            if v is not None and v != ""
         },
     }
 
@@ -159,11 +157,10 @@ def dotemplate(
         'metadata': {
             **_component.get("metadata", {}),
             "labels": {
-                k: v
-                for k, v in _component['metadata']['labels'].items()
-                if k not in [
+                k: (v if k not in [
                     "app.kubernetes.io/component",
-                ]
+                ] else '')
+                for k, v in _component['metadata']['labels'].items()
             },
             "name": "-".join(
                 unique_justseen(
@@ -180,11 +177,10 @@ def dotemplate(
             ),
         },
         'selector': {
-            k: v
-            for k, v in _component['selector'].items()
-            if k not in [
+            k: (v if k not in [
                 "app.kubernetes.io/component",
-            ]
+            ] else '')
+            for k, v in _component['selector'].items()
         },
     }
 
@@ -193,11 +189,10 @@ def dotemplate(
         'metadata': {
             **_instance.get("metadata", {}),
             "labels": {
-                k: v
-                for k, v in _instance['metadata']['labels'].items()
-                if k not in [
+                k: (v if k not in [
                     "app.kubernetes.io/instance",
-                ]
+                ] else '')
+                for k, v in _instance['metadata']['labels'].items()
             },
             "name": "-".join(
                 unique_justseen(
@@ -213,11 +208,10 @@ def dotemplate(
             ),
         },
         'selector': {
-            k: v
-            for k, v in _instance['selector'].items()
-            if k not in [
+            k: (v if k not in [
                 "app.kubernetes.io/instance",
-            ]
+            ] else '')
+            for k, v in _instance['selector'].items()
         },
     }
 
@@ -226,11 +220,10 @@ def dotemplate(
         'metadata': {
             **_class.get("metadata", {}),
             "labels": {
-                k: v
-                for k, v in _class['metadata']['labels'].items()
-                if k not in [
+                k: (v if k not in [
                     "app.kubernetes.io/class",
-                ]
+                ] else '')
+                for k, v in _class['metadata']['labels'].items()
             },
             "name": "-".join(
                 unique_justseen(
@@ -245,11 +238,10 @@ def dotemplate(
             ),
         },
         'selector': {
-            k: v
-            for k, v in _class['selector'].items()
-            if k not in [
+            k: (v if k not in [
                 "app.kubernetes.io/class",
-            ]
+            ] else '')
+            for k, v in _class['selector'].items()
         },
     }
 
