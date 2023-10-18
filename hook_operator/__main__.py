@@ -295,7 +295,7 @@ def dotemplate(
             f.write(yaml.dump(output))
 
     return {
-        "operation": "CreateOrUpdate",
+        "operation": options.get("operation", "CreateOrUpdate"),
         "object": output,
     }
 
