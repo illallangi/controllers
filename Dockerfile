@@ -1,6 +1,6 @@
 FROM ghcr.io/flant/shell-operator:v1.3.1 as shell-operator
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.18
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.19
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN \
   apk --no-cache add \
