@@ -18,7 +18,7 @@ COPY --from=shell-operator /shell-operator /
 COPY requirements.txt /usr/src/app
 
 WORKDIR /usr/src/app
-RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app
 RUN python3 -m pip install --no-cache-dir .
