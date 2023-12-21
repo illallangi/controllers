@@ -1,7 +1,7 @@
 FROM ghcr.io/flant/shell-operator:v1.3.1 as shell-operator
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.18
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN \
   apk --no-cache add \
     ca-certificates=20230506-r0 \
