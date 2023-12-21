@@ -11,11 +11,11 @@ RUN \
     python3=3.11.6-r0 \
     py3-pip=23.1.2-r0 \
   && \
-    kubectlArch=$(echo ${TARGETPLATFORM:-linux/amd64} | sed "s/\/v7//") \
+    kubectlArch="$(echo ${TARGETPLATFORM:-linux/amd64} | sed "s/\/v7//")" \
   && \
   echo "Download kubectl for ${kubectlArch}" \
   && \
-  wget -q https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl -O /bin/kubectl \
+  wget -q "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" -O /bin/kubectl \
   && \
   chmod +x /bin/kubectl \
   && \
