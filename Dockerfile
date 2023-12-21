@@ -1,4 +1,4 @@
-FROM ghcr.io/flant/shell-operator:v1.3.1 as shell-operator
+FROM ghcr.io/flant/shell-operator:v1.4.4 as shell-operator
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.18
 RUN apk --no-cache add ca-certificates bash sed tini python3 py3-pip && \
