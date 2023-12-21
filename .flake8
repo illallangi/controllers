@@ -1,0 +1,5 @@
+[flake8]
+exclude = .git, __pycache__
+ignore =
+    E501 # line too long
+    W503 # Line break occurred before a binary operator

@@ -1,0 +1,61 @@
+---
+jobs:
+  lint-actions:  # https://github.com/reviewdog/action-actionlint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: reviewdog/action-actionlint@v1
+      with:
+        fail_on_error: "true"
+        filter_mode: nofilter
+    - uses: reviewdog/action-suggester@v1
+  lint-dockerfile:  # https://github.com/reviewdog/action-hadolint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: reviewdog/action-hadolint@v1
+      with:
+        fail_on_error: "true"
+        filter_mode: nofilter
+    - uses: reviewdog/action-suggester@v1
+  lint-spelling:  # https://github.com/reviewdog/action-misspell
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: reviewdog/action-misspell@v1
+      with:
+        exclude: |
+          */*.min.css
+          */*.svg
+        fail_on_error: "true"
+        filter_mode: nofilter
+    - uses: reviewdog/action-suggester@v1
+  lint-yaml:  # https://github.com/reviewdog/action-yamllint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: reviewdog/action-yamllint@v1
+      with:
+        fail_on_error: "true"
+        filter_mode: nofilter
+    - uses: reviewdog/action-suggester@v1
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: "0"
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Build
+      uses: docker/build-push-action@v5
+      with:
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: false
+name: Test
+on: pull_request

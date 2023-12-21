@@ -1,3 +1,4 @@
+---
 extends: default
 rules:
   braces:
@@ -19,7 +20,7 @@ rules:
   document-end:
     present: false
   document-start:
-    present: false
+    present: true
   empty-lines:
     max: 0
   empty-values:
@@ -34,7 +35,7 @@ rules:
   key-duplicates: {}
   key-ordering: {}
   line-length:
-    max: 1600
+    max: 160
   new-line-at-end-of-file: {}
   new-lines:
     type: unix
@@ -44,11 +45,11 @@ rules:
   quoted-strings:
     extra-allowed: []
     extra-required: []
-    quote-type: single
-    required: false
+    quote-type: double
+    required: only-when-needed
   trailing-spaces: {}
   truthy:
     allowed-values:
-    - true
-    - false
+    - "true"
+    - "false"
     check-keys: false

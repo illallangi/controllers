@@ -1,0 +1,24 @@
+---
+updates:
+- assignees:
+  - andrewcole
+  directory: /
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  schedule:
+    interval: daily
+- assignees:
+  - andrewcole
+  directory: /
+  open-pull-requests-limit: 10
+  package-ecosystem: github-actions
+  schedule:
+    interval: daily
+- assignees:
+  - andrewcole
+  directory: /
+  open-pull-requests-limit: 10
+  package-ecosystem: pip
+  schedule:
+    interval: daily
+version: 2

@@ -1,0 +1,8 @@
+.dockerignore
+.flake8
+.git
+.github
+.gitignore
+.yamllint
+Dockerfile
+LICENSE
