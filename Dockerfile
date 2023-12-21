@@ -5,11 +5,11 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN \
   apk --no-cache add \
     ca-certificates=20230506-r0 \
-    bash=5.2.15-r5 \
+    bash=5.2.21-r0 \
     sed=4.9-r2 \
-    tini=0.19.0-r1 \
-    python3=3.11.6-r0 \
-    py3-pip=23.1.2-r0 \
+    tini=0.19.0-r2 \
+    python3=3.11.6-r1 \
+    py3-pip=23.3.1-r0 \
   && \
     kubectlArch="$(echo "${TARGETPLATFORM:-linux/amd64}" | sed "s/\/v7//")" \
   && \
