@@ -15,7 +15,7 @@ RUN \
   && \
   echo "Download kubectl for ${kubectlArch}" \
   && \
-  wget https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl -O /bin/kubectl \
+  wget -q https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl -O /bin/kubectl \
   && \
   chmod +x /bin/kubectl \
   && \
