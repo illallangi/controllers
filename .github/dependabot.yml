@@ -3,6 +3,8 @@ updates:
 - assignees:
   - andrewcole
   directory: /
+  labels:
+  - automerge
   open-pull-requests-limit: 10
   package-ecosystem: docker
   schedule:
@@ -10,6 +12,8 @@ updates:
 - assignees:
   - andrewcole
   directory: /
+  labels:
+  - automerge
   open-pull-requests-limit: 10
   package-ecosystem: github-actions
   schedule:
@@ -17,6 +21,8 @@ updates:
 - assignees:
   - andrewcole
   directory: /
+  labels:
+  - automerge
   open-pull-requests-limit: 10
   package-ecosystem: pip
   schedule:
