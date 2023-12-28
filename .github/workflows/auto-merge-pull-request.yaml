@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT }}
         MERGE_DELETE_BRANCH: "true"
         MERGE_FORKS: "false"
         MERGE_RETRIES: "720"
