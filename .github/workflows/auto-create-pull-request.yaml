@@ -6,7 +6,16 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: "0"
+    - env:
+        DRY_RUN: true
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        WITH_V: true
+      id: version
+      name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.67.0
     - name: pull-request
       uses: diillson/auto-pull-request@v1.0.1
       with:

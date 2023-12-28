@@ -10,7 +10,6 @@ jobs:
       with:
         fetch-depth: "0"
     - env:
-        DEFAULT_BUMP: patch
         GITHUB_TOKEN: ${{ secrets.PAT }}
         WITH_V: true
       id: version
