@@ -1,45 +1,9 @@
 ---
 jobs:
-  lint-actions:  # https://github.com/reviewdog/action-actionlint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: reviewdog/action-actionlint@v1
-      with:
-        fail_on_error: "true"
-        filter_mode: nofilter
-    - uses: reviewdog/action-suggester@v1
-  lint-dockerfile:  # https://github.com/reviewdog/action-hadolint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: reviewdog/action-hadolint@v1
-      with:
-        fail_on_error: "true"
-        filter_mode: nofilter
-    - uses: reviewdog/action-suggester@v1
-  lint-spelling:  # https://github.com/reviewdog/action-misspell
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: reviewdog/action-misspell@v1
-      with:
-        exclude: |
-          */*.min.css
-          */*.svg
-        fail_on_error: "true"
-        filter_mode: nofilter
-    - uses: reviewdog/action-suggester@v1
-  lint-yaml:  # https://github.com/reviewdog/action-yamllint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: reviewdog/action-yamllint@v1
-      with:
-        fail_on_error: "true"
-        filter_mode: nofilter
-    - uses: reviewdog/action-suggester@v1
   test:
+    concurrency:
+      cancel-in-progress: true
+      group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -57,5 +21,9 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: false
-name: Test
-on: pull_request
+name: Test Development Build
+on:
+  pull_request:
+    branches:
+    - development
+    - master
