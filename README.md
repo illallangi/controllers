@@ -1,4 +1,4 @@
-# 🚚 [Hook Operator](https://github.com/illallangi/hook-operator)
+# 🪝 [Hook Operator](https://github.com/illallangi/hook-operator)
 
 TODO: SET DESCRIPTION
 
