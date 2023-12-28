@@ -1,0 +1,31 @@
+---
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MERGE_DELETE_BRANCH: "true"
+        MERGE_FORKS: "false"
+      id: automerge
+      name: Auto Merge
+      uses: pascalgn/automerge-action@v0.15.6
+name: Automatically Merge Pull Requests
+on:
+  check_suite:
+    types:
+    - completed
+  pull_request:
+    types:
+    - labeled
+    - unlabeled
+    - synchronize
+    - opened
+    - edited
+    - ready_for_review
+    - reopened
+    - unlocked
+  pull_request_review:
+    types:
+    - submitted
+  status: {}
