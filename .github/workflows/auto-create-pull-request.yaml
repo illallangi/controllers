@@ -10,6 +10,7 @@ jobs:
     - name: pull-request
       uses: diillson/auto-pull-request@v1.0.1
       with:
+        destination_branch: master
         pr_assignee: andrewcole
         pr_label: release
 name: Automatically Create Pull Request
