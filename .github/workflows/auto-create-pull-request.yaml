@@ -1,0 +1,31 @@
+---
+jobs:
+  pull-request:
+    concurrency:
+      cancel-in-progress: true
+      group: ${{ github.workflow }}-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: "0"
+    - env:
+        DRY_RUN: true
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        WITH_V: true
+      id: version
+      name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.67.0
+    - name: pull-request
+      uses: diillson/auto-pull-request@v1.0.1
+      with:
+        destination_branch: master
+        github_token: ${{ secrets.PAT }}
+        pr_assignee: andrewcole
+        pr_label: release
+        pr_title: Release ${{ steps.version.outputs.new_tag  }}
+name: Automatically Create Pull Request
+on:
+  push:
+    branches:
+    - development
