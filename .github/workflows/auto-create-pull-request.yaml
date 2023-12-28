@@ -23,6 +23,7 @@ jobs:
         github_token: ${{ secrets.PAT }}
         pr_assignee: andrewcole
         pr_label: release
+        pr_title: Release ${{ steps.version.outputs.new_tag  }}
 name: Automatically Create Pull Request
 on:
   push:
