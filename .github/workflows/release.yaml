@@ -1,9 +1,6 @@
 ---
 jobs:
   release:
-    concurrency:
-      cancel-in-progress: true
-      group: ${{ github.workflow }}-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
