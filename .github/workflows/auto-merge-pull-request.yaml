@@ -4,16 +4,15 @@ jobs:
     concurrency:
       cancel-in-progress: true
       group: ${{ github.workflow }}-${{ github.ref }}
+    if: contains(github.event.pull_request.labels.*.name, 'automerge')
     runs-on: ubuntu-latest
     steps:
-    - env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-        MERGE_DELETE_BRANCH: "true"
-        MERGE_FORKS: "false"
-        MERGE_RETRIES: "720"
-      id: automerge
+    - id: automerge
       name: Auto Merge
-      uses: pascalgn/automerge-action@v0.15.6
+      uses: alexwilson/enable-github-automerge-action@main
+      with:
+        github-token: ${{ secrets.PAT }}
+        merge-method: MERGE
 name: Automatically Merge Pull Requests
 on:
   check_suite:
