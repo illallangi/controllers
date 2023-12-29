@@ -1,9 +1,6 @@
 ---
 jobs:
   automerge:
-    concurrency:
-      cancel-in-progress: true
-      group: ${{ github.workflow }}-${{ github.ref }}
     if: contains(github.event.pull_request.labels.*.name, 'automerge')
     runs-on: ubuntu-latest
     steps:
