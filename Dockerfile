@@ -1,25 +1,50 @@
 FROM ghcr.io/flant/shell-operator:v1.4.5 as shell-operator
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.19
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-RUN \
-  apk --no-cache add \
-    ca-certificates=20230506-r0 \
-    bash=5.2.21-r0 \
-    sed=4.9-r2 \
-    tini=0.19.0-r2 \
-    python3=3.11.6-r1 \
-    py3-pip=23.3.1-r0 \
+# kubectl build image
+FROM docker.io/library/debian:bookworm-20231218 as kubectl
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Install packages
+RUN DEBIAN_FRONTEND=noninteractive \
+  apt-get update \
   && \
-    kubectlArch="$(echo "${TARGETPLATFORM:-linux/amd64}" | sed "s/\/v7//")" \
+  apt-get install -y --no-install-recommends \
+    ca-certificates=20230311 \
+    wget=1.21.3-1+b2 \
+  && \
+  apt-get clean \
+  && \
+  rm -rf /var/lib/apt/lists/* \
+  && \
+  kubectlArch="$(echo "${TARGETPLATFORM:-linux/amd64}" | sed "s/\/v7//")" \
   && \
   echo "Download kubectl for ${kubectlArch}" \
   && \
-  wget -q "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" -O /bin/kubectl \
+  wget -q "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" -O /usr/bin/kubectl \
   && \
-  chmod +x /bin/kubectl \
+  chmod +x /usr/bin/kubectl
+
+# Main image
+FROM docker.io/library/debian:bookworm-20231218
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Install packages
+RUN DEBIAN_FRONTEND=noninteractive \
+  apt-get update \
+  && \
+  apt-get install -y --no-install-recommends \
+    ca-certificates=20230311 \
+    tini=0.19.0-1 \
+    python3-pip=23.0.1+dfsg-1 \
+
+  && \
+  apt-get clean \
+  && \
+  rm -rf /var/lib/apt/lists/* \
   && \
   mkdir -p /hooks /usr/src/app
+
+COPY --from=kubectl /bin/kubectl /usr/bin/kubectl
 
 COPY --from=shell-operator /frameworks/shell/context.sh /frameworks/shell
 COPY --from=shell-operator /frameworks/shell/hook.sh /frameworks/shell
@@ -36,9 +61,8 @@ RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirement
 COPY . /usr/src/app
 RUN python3 -m pip install --no-cache-dir --break-system-packages  .
 
-
 WORKDIR /
 ENV SHELL_OPERATOR_HOOKS_DIR /hooks
 ENV LOG_TYPE json
-ENTRYPOINT ["/sbin/tini", "--", "/shell-operator"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/shell-operator"]
 CMD ["start"]
