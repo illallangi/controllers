@@ -36,6 +36,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
   && \
   apt-get install -y --no-install-recommends \
     ca-certificates=20230311 \
+    curl=7.88.1-10+deb12u5 \
     tini=0.19.0-1 \
     python3-pip=23.0.1+dfsg-1 \
   && \
@@ -54,16 +55,36 @@ COPY --from=shell-operator /shell_lib.sh /
 COPY --from=shell-operator /usr/bin/jq /usr/bin
 COPY --from=shell-operator /shell-operator /
 
-COPY requirements.txt /usr/src/app
+# Install s6 overlay
+RUN \
+  if [ "$(uname -m)" = "x86_64" ]; then \
+    curl https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer --location --output /tmp/s6-overlay-installer \
+  ; fi \
+  && \
+  if [ "$(uname -m)" = "aarch64" ]; then \
+    curl https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-aarch64-installer --location --output /tmp/s6-overlay-installer \
+  ; fi \
+  && \
+  chmod +x \
+    /tmp/s6-overlay-installer \
+  && \
+  /tmp/s6-overlay-installer / \
+  && \
+  rm /tmp/s6-overlay-installer
 
-WORKDIR /usr/src/app
-RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
-COPY . /usr/src/app
-RUN python3 -m pip install --no-cache-dir --break-system-packages  .
+# Set command
+CMD ["/init"]
 
-WORKDIR /
+# Install Python packages
+COPY rootfs/usr/src/app/requirements.txt /usr/src/app/requirements.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r /usr/src/app/requirements.txt
+
+# Copy rootfs
+COPY rootfs /
+
+RUN python3 -m pip install --no-cache-dir --break-system-packages  /usr/src/app
+
 ENV SHELL_OPERATOR_HOOKS_DIR /hooks
 ENV LOG_TYPE json
-ENTRYPOINT ["/usr/bin/tini", "--", "/shell-operator"]
-CMD ["start"]
