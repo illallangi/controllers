@@ -1,0 +1,94 @@
+#!/usr/local/bin/hook
+---
+component: redis
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Mastodon
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _component.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _component.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: redis
+      labels: {{ _component.selector }}
+    spec:
+      containers:
+      - command:
+        - "redis-server"
+        - "--save"
+        - "60"
+        - "1"
+        - "--loglevel"
+        - "warning"
+        image: docker.io/library/redis:7.2.3
+        imagePullPolicy: "IfNotPresent"
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "redis-cli"
+              - "shutdown"
+        livenessProbe:
+          exec:
+            command:
+            - "redis-cli"
+            - "ping"
+        name: "redis"
+        ports:
+        - containerPort: 6379
+          name: redis
+        resources: {}
+        startupProbe:
+          exec:
+            command:
+            - "redis-cli"
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/data"
+          name: "persistence"
+          subPath: "data"
+{% if _component.spec.redis is defined
+   and _component.spec.redis.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.redis.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /data
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag redis
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.redis.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.redis.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.redis.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.redis.backup.b2AccountKey }}
+        image: docker.io/mazzolino/restic:1.7.0
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: /data
+          name: persistence
+          subPath: data
+{% endif %}
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _component.metadata.name }}"
+        name: "persistence"

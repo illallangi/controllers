@@ -1,0 +1,208 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Mastodon
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: mastodon
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+# General configuration
+        - name: PUID
+          valueFrom:
+            configMapKeyRef:
+              key: uid
+              name: "{{ _instance.metadata.name }}"
+        - name: PGID
+          valueFrom:
+            configMapKeyRef:
+              key: gid
+              name: "{{ _instance.metadata.name }}"
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              key: timezone
+              name: "{{ _instance.metadata.name }}"
+# Domain Configuration
+        - name: LOCAL_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              key: localdomain
+              name: "{{ _instance.metadata.name }}"
+        - name: WEB_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              key: webdomain
+              name: "{{ _instance.metadata.name }}"
+# Redis Configuration
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: hostname
+              name: "{{ _instance.metadata.name }}-redis"
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: port
+              name: "{{ _instance.metadata.name }}-redis"
+# PostgreSQL Configuration
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: hostname
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: username
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: database
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_PASS
+          valueFrom: {{ _instance.spec.postgresql.password }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: port
+              name: "{{ _instance.metadata.name }}-postgresql"
+# ElasticSearch Configuration
+        - name: ES_ENABLED
+          value: "false"
+# S3 Configuration
+        - name: S3_ENABLED
+          value: "false"
+# SMTP Configuration
+        - name: SMTP_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: host
+              name: "{{ _instance.metadata.name }}-smtp"
+        - name: SMTP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: port
+              name: "{{ _instance.metadata.name }}-smtp"
+        - name: SMTP_LOGIN
+          valueFrom:
+            configMapKeyRef:
+              key: username
+              name: "{{ _instance.metadata.name }}-smtp"
+        - name: SMTP_PASSWORD
+          valueFrom: {{ _instance.spec.smtp.password }}
+        - name: SMTP_FROM_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: from
+              name: "{{ _instance.metadata.name }}-smtp"
+# Secret Configuration
+        - name: "SECRET_KEY_BASE"
+          valueFrom: {{ _instance.spec.mastodon.secretKeyBase }}
+        - name: "OTP_SECRET"
+          valueFrom: {{ _instance.spec.mastodon.otpSecret }}
+        - name: "VAPID_PRIVATE_KEY"
+          valueFrom: {{ _instance.spec.mastodon.vapidPrivateKey }}
+        - name: "VAPID_PUBLIC_KEY"
+          valueFrom: {{ _instance.spec.mastodon.vapidPublicKey }}
+        image: lscr.io/linuxserver/mastodon:v4.2.3-ls65
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            httpHeaders:
+            - name: Host
+              value: "{{ _instance.spec.mastodon.webDomain }}"
+            path: "/api/v1/instance/peers"
+            port: 443
+            scheme: HTTPS
+        name: "mastodon"
+        ports:
+        - containerPort: 443
+          name: https
+        resources: {}
+        startupProbe:
+          httpGet:
+            httpHeaders:
+            - name: Host
+              value: "{{ _instance.spec.mastodon.webDomain }}"
+            path: "/api/v1/instance/peers"
+            port: 443
+            scheme: HTTPS
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% if _component.spec.mastodon is defined
+   and _component.spec.mastodon.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.mastodon.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /config
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag mastodon
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.mastodon.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.mastodon.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.mastodon.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.mastodon.backup.b2AccountKey }}
+        image: docker.io/mazzolino/restic:1.7.0
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-postgresql"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "init-postgresql"
+        resources: {}
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-redis"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "init-redis"
+        resources: {}
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"

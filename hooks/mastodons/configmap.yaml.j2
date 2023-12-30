@@ -1,0 +1,16 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Mastodon
+---
+apiVersion: "v1"
+data:
+  hostname: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
+  uid: "{{ _instance.spec.uid }}"
+  gid: "{{ _instance.spec.gid }}"
+  timezone: "Australia/Melbourne"
+  localdomain: "{{ _instance.spec.mastodon.localDomain }}"
+  webdomain: "{{ _instance.spec.mastodon.webDomain }}"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}

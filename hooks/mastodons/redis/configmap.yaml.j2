@@ -1,0 +1,13 @@
+#!/usr/local/bin/hook
+---
+component: redis
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Mastodon
+---
+apiVersion: "v1"
+data:
+  hostname: "{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local"
+  port: "6379"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
