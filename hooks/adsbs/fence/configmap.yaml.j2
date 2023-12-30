@@ -214,7 +214,7 @@ data:
     }
     #
     #===============================================================================
-    # Ctrl-C interupt handler
+    # Ctrl-C interrupt handler
     my $interrupted = 0;
     $SIG{'INT'} = \&intHandler;
     #
@@ -256,7 +256,7 @@ data:
     This $scriptname script can retrieve flight data (like lat, lon and alt)
     from a dump1090 host using port 30003 and calcutates the distance and
     angle between the antenna and the plane. It will store these values in an
-    output file in csv format (seperated by commas).
+    output file in csv format (separated by commas).
 
     This script can run several times simultaneously on one host retrieving
     data from multiple dump1090 instances on different hosts. Each instance
@@ -828,7 +828,7 @@ data:
         my $diff2 = abs($flight{$hex_ident}{'lon_loggedtime'} - $flight{$hex_ident}{'altitude_loggedtime'});
         my $diff3 = abs($flight{$hex_ident}{'lat_loggedtime'} - $flight{$hex_ident}{'altitude_loggedtime'});
 
-        # Be sure that the time differance between the messages is less than $TIME_MESSAGE_MARGIN.
+        # Be sure that the time difference between the messages is less than $TIME_MESSAGE_MARGIN.
         next unless (($diff1 < $TIME_MESSAGE_MARGIN) && ($diff2 < $TIME_MESSAGE_MARGIN) && ($diff3 < $TIME_MESSAGE_MARGIN));
 
         # Skip this one if lat / lon / alt are the same as previously
