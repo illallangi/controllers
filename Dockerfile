@@ -18,9 +18,11 @@ RUN DEBIAN_FRONTEND=noninteractive \
   && \
   kubectlArch="$(echo "${TARGETPLATFORM:-linux/amd64}" | sed "s/\/v7//")" \
   && \
-  echo "Download kubectl for ${kubectlArch}" \
+  kubectlVersion="$(curl https://dl.k8s.io/release/stable.txt --location --silent)" \
   && \
-  curl "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" --location --output /usr/bin/kubectl \
+  echo "Download kubectl ${kubectlVersion} for ${kubectlArch}" \
+  && \
+  curl "https://dl.k8s.io/release/${kubectlVersion}/bin/${kubectlArch}/kubectl" --location --output /usr/bin/kubectl --silent \
   && \
   chmod +x /usr/bin/kubectl
 
