@@ -6,8 +6,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: "0"
-    - name: Get Version
-      id: version
+    - id: version
+      name: Get Version
       run: echo "new_tag=${GITHUB_REF#refs/*/}" >> "${GITHUB_OUTPUT}"
     - id: meta
       name: Docker meta
