@@ -10,7 +10,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
   && \
   apt-get install -y --no-install-recommends \
     ca-certificates=20230311 \
-    wget=1.21.3-1+b2 \
+    curl=7.88.1-10+deb12u5 \
   && \
   apt-get clean \
   && \
@@ -20,7 +20,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
   && \
   echo "Download kubectl for ${kubectlArch}" \
   && \
-  wget -q "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" -O /usr/bin/kubectl \
+  curl "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" --location --output /usr/bin/kubectl \
   && \
   chmod +x /usr/bin/kubectl
 
