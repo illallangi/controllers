@@ -1,0 +1,47 @@
+#!/usr/local/bin/hook
+---
+component: fr24feed
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+{% if _component.spec.fr24feed is defined %}
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _component.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _component.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: ultrafeeder
+      labels: {{ _component.selector }}
+    spec:
+      containers:
+      - env:
+        - name: "FR24KEY"
+          valueFrom: {{ _component.spec.fr24feed.sharingKey }}
+        - name: "BEASTHOST"
+          value: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
+        image: "ghcr.io/sdr-enthusiasts/docker-flightradar24:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "fr24feed"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/var/log"
+          name: "scratch"
+          subPath: "var/log"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - emptyDir: {}
+        name: "scratch"
+{% endif %}
