@@ -86,10 +86,7 @@ RUN \
 COPY --from=shell-operator /rootfs /
 
 # Set environment variables
-ENV \
-  S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-  SHELL_OPERATOR_HOOKS_DIR=/hooks \
-  LOG_TYPE=json  
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
 # Set command
 CMD ["/init"]

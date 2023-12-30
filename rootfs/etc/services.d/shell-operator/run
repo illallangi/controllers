@@ -1,3 +1,6 @@
 #!/usr/bin/with-contenv bash
 
+export SHELL_OPERATOR_HOOKS_DIR=${SHELL_OPERATOR_HOOKS_DIR:-/hooks}
+export LOG_TYPE=${LOG_TYPE:-json}
+
 /shell-operator
