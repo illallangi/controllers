@@ -1,4 +1,22 @@
 FROM ghcr.io/flant/shell-operator:v1.4.5 as shell-operator
+RUN \
+  mkdir -p \
+    /rootfs/frameworks/shell \
+    /rootfs/usr/bin \
+  && \
+  cp \
+    /usr/bin/jq \
+    /rootfs/usr/bin \
+  && \
+  cp \
+    /shell-operator \
+    /shell_lib.sh \
+    /rootfs \
+  && \ 
+  cp \
+    /frameworks/shell/context.sh \
+    /frameworks/shell/hook.sh \
+    /rootfs/frameworks/shell
 
 # Main image
 FROM docker.io/library/debian:bookworm-20231218
@@ -65,12 +83,8 @@ RUN \
 # Make directories
   mkdir -p /hooks /usr/src/app
 
-COPY --from=shell-operator /frameworks/shell/context.sh /frameworks/shell
-COPY --from=shell-operator /frameworks/shell/hook.sh /frameworks/shell
-COPY --from=shell-operator /shell_lib.sh /
-
-COPY --from=shell-operator /usr/bin/jq /usr/bin
-COPY --from=shell-operator /shell-operator /
+# Install shell-operator
+COPY --from=shell-operator /rootfs /
 
 # Set environment variables
 ENV \
