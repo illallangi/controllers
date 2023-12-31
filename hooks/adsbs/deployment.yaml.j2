@@ -1,0 +1,155 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: ultrafeeder
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        # General parameters
+        - name: "LOGLEVEL"
+          value: "error"
+        - name: "TZ"
+          valueFrom:
+            configMapKeyRef:
+              key: "timezone"
+              name: "{{ _instance.metadata.name }}"
+        # SDR related parameters"
+        - name: "READSB_DEVICE_TYPE"
+          value: "rtlsdr"
+        - name: "READSB_RTLSDR_DEVICE"
+          value: "109000"
+        # Readsb/decoder parameters
+        - name: "READSB_LAT"
+          valueFrom:
+            configMapKeyRef:
+              key: "latitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "READSB_LON"
+          valueFrom:
+            configMapKeyRef:
+              key: "longitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "READSB_ALT"
+          valueFrom:
+            configMapKeyRef:
+              key: "altitude"
+              name: "{{ _instance.metadata.name }}"
+        # TAR1090 (Map Web Page) parameters:"
+        - name: "UPDATE_TAR1090"
+          value: "true"
+        - name: "TAR1090_DEFAULTCENTERLAT"
+          valueFrom:
+            configMapKeyRef:
+              key: "latitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "TAR1090_DEFAULTCENTERLON"
+          valueFrom:
+            configMapKeyRef:
+              key: "longitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "TAR1090_MESSAGERATEINTITLE"
+          value: "true"
+        - name: "TAR1090_PAGETITLE"
+          valueFrom:
+            configMapKeyRef:
+              key: "title"
+              name: "{{ _instance.metadata.name }}"
+        - name: "TAR1090_PLANECOUNTINTITLE"
+          value: "true"
+        - name: "TAR1090_ENABLE_AC_DB"
+          value: "true"
+        - name: "TAR1090_FLIGHTAWARELINKS"
+          value: "true"
+        - name: "TAR1090_SITESHOW"
+          value: "true"
+        - name: "TAR1090_RANGE_OUTLINE_COLORED_BY_ALTITUDE"
+          value: "true"
+        - name: "TAR1090_RANGE_OUTLINE_WIDTH"
+          value: "2.0"
+        - name: "TAR1090_RANGERINGSDISTANCES"
+          value: "50,100,150,200"
+        - name: "TAR1090_RANGERINGSCOLORS"
+          value: "'#1A237E','#0D47A1','#42A5F5','#64B5F6'"
+        - name: "TAR1090_USEROUTEAPI"
+          value: "true"
+        # GRAPHS1090 (Decoder and System Status Web Page) parameters:
+        - name: "GRAPHS1090_DARKMODE"
+          value: "true"
+        image: "ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: "http"
+        name: "ultrafeeder"
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 30003
+          name: basestation
+        - containerPort: 30005
+          name: beast
+        resources: {}
+        securityContext:
+          privileged: true
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: http
+        volumeMounts:
+        - mountPath: /var/globe_history
+          name: persistence
+          subPath: "var/globe_history"
+        - mountPath: /var/lib/collectd
+          name: persistence
+          subPath: "var/lib/collectd"
+        - mountPath: "/dev/bus/usb"
+          name: "usb"
+        - mountPath: "/proc/diskstats"
+          name: "diskstats"
+        - mountPath: "/run"
+          name: "scratch"
+          subPath: "run"
+        - mountPath: "/tmp"
+          name: "scratch"
+          subPath: "tmp"
+        - mountPath: "/var/log"
+          name: "scratch"
+          subPath: "var/log"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      nodeSelector:
+        rtlsdr-109000: "true"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - hostPath:
+          path: "/dev/bus/usb"
+          type: "Directory"
+        name: "usb"
+      - hostPath:
+          path: "/proc/diskstats"
+          type: "File"
+        name: "diskstats"
+      - emptyDir: {}
+        name: "scratch"
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"

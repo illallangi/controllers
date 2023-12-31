@@ -1,15 +1,12 @@
 import setuptools
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
 setuptools.setup(
     name="hook-operator",
     version="0.0.1",
     author="Andrew Cole",
     author_email="andrew.cole@illallangi.com",
     description="TODO: SET DESCRIPTION",
-    long_description=long_description,
+    long_description="TODO: SET LONG DESCRIPTION",
     long_description_content_type="text/markdown",
     url="https://github.com/illallangi/hook-operator",
     packages=setuptools.find_packages(),

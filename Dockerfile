@@ -1,44 +1,106 @@
 FROM ghcr.io/flant/shell-operator:v1.4.5 as shell-operator
-
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.19
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN \
-  apk --no-cache add \
-    ca-certificates=20230506-r0 \
-    bash=5.2.21-r0 \
-    sed=4.9-r2 \
-    tini=0.19.0-r2 \
-    python3=3.11.6-r1 \
-    py3-pip=23.3.1-r0 \
+  mkdir -p \
+    /rootfs/frameworks/shell \
+    /rootfs/usr/bin \
   && \
-    kubectlArch="$(echo "${TARGETPLATFORM:-linux/amd64}" | sed "s/\/v7//")" \
+  cp \
+    /usr/bin/jq \
+    /rootfs/usr/bin \
   && \
-  echo "Download kubectl for ${kubectlArch}" \
+  cp \
+    /shell-operator \
+    /shell_lib.sh \
+    /rootfs \
+  && \ 
+  cp \
+    /frameworks/shell/context.sh \
+    /frameworks/shell/hook.sh \
+    /rootfs/frameworks/shell
+
+# Main image
+FROM docker.io/library/debian:bookworm-20231218
+ARG hooks=default
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN \
+# Install packages
+  apt-get update \
   && \
-  wget -q "https://storage.googleapis.com/kubernetes-release/release/v1.27.4/bin/${kubectlArch}/kubectl" -O /bin/kubectl \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates=20230311 \
+    curl=7.88.1-10+deb12u5 \
+    python3-pip=23.0.1+dfsg-1 \
   && \
-  chmod +x /bin/kubectl \
+  apt-get clean \
   && \
+  rm -rf /var/lib/apt/lists/* \
+  && \
+# Install s6 overlay
+  if [ "$(uname -m)" = "x86_64" ]; then \
+    curl \
+      https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer \
+      --location \
+      --output /tmp/s6-overlay-installer \
+      --silent \
+  ; fi \
+  && \
+  if [ "$(uname -m)" = "aarch64" ]; then \
+    curl \
+      https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-aarch64-installer \
+      --location \
+      --output /tmp/s6-overlay-installer \
+      --silent \
+  ; fi \
+  && \
+  chmod +x \
+    /tmp/s6-overlay-installer \
+  && \
+  /tmp/s6-overlay-installer / \
+  && \
+  rm /tmp/s6-overlay-installer \
+  && \
+# Install kubectl
+  if [ "$(uname -m)" = "x86_64" ]; then \
+    curl \
+      https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl \
+      --location \
+      --output /usr/bin/kubectl \
+      --silent \
+  ; fi \
+  && \
+  if [ "$(uname -m)" = "aarch64" ]; then \
+    curl \
+      https://dl.k8s.io/release/v1.29.0/bin/linux/arm64/kubectl \
+      --location \
+      --output /usr/bin/kubectl \
+      --silent \
+  ; fi \
+  && \
+  chmod +x \
+    /usr/bin/kubectl \
+  && \
+# Make directories
   mkdir -p /hooks /usr/src/app
 
-COPY --from=shell-operator /frameworks/shell/context.sh /frameworks/shell
-COPY --from=shell-operator /frameworks/shell/hook.sh /frameworks/shell
-COPY --from=shell-operator /shell_lib.sh /
+# Install shell-operator
+COPY --from=shell-operator /rootfs /
 
-COPY --from=shell-operator /usr/bin/jq /usr/bin
-COPY --from=shell-operator /shell-operator /
+# Set environment variables
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
-COPY requirements.txt /usr/src/app
+# Set command
+CMD ["/init"]
 
-WORKDIR /usr/src/app
-RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
+# Install Python requirements
+COPY rootfs/usr/src/app/requirements.txt /usr/src/app/requirements.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r /usr/src/app/requirements.txt
 
-COPY . /usr/src/app
-RUN python3 -m pip install --no-cache-dir --break-system-packages  .
+# Copy rootfs
+COPY rootfs /
 
+# Copy hooks
+COPY hooks/${hooks} /hooks
 
-WORKDIR /
-ENV SHELL_OPERATOR_HOOKS_DIR /hooks
-ENV LOG_TYPE json
-ENTRYPOINT ["/sbin/tini", "--", "/shell-operator"]
-CMD ["start"]
+# Install Python package
+RUN python3 -m pip install --no-cache-dir --break-system-packages  /usr/src/app

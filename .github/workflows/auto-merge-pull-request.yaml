@@ -1,0 +1,31 @@
+---
+jobs:
+  automerge:
+    if: contains(github.event.pull_request.labels.*.name, 'automerge')
+    runs-on: ubuntu-latest
+    steps:
+    - id: automerge
+      name: Auto Merge
+      uses: alexwilson/enable-github-automerge-action@main
+      with:
+        github-token: ${{ secrets.PAT }}
+        merge-method: MERGE
+name: Automatically Merge Pull Requests
+on:
+  check_suite:
+    types:
+    - completed
+  pull_request:
+    types:
+    - labeled
+    - unlabeled
+    - synchronize
+    - opened
+    - edited
+    - ready_for_review
+    - reopened
+    - unlocked
+  pull_request_review:
+    types:
+    - submitted
+  status: {}
