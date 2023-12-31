@@ -1,0 +1,21 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _instance.metadata }}
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  - name: basestation
+    port: 30003
+    targetPort: basestation
+  - name: beast
+    port: 30005
+    targetPort: beast
+  selector: {{ _instance.selector }}

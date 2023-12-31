@@ -1,0 +1,100 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: PiGallery
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: pigallery
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
+        image: docker.io/bpatrik/pigallery2:latest
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            port: http
+        name: pigallery
+        ports:
+        - containerPort: 80
+          name: http
+        resources: {}
+        startupProbe:
+          httpGet:
+            port: http
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/app/data/images"
+          name: "persistence"
+          subPath: "images"
+        - mountPath: "/app/data/config"
+          name: "scratch"
+          subPath: "config"
+        - mountPath: "/app/data/db"
+          name: "scratch"
+          subPath: "db"
+        - mountPath: "/app/data/tmp"
+          name: "scratch"
+          subPath: "tmp"
+{% if _instance.spec.tailscale is defined %}
+      - env:
+        - name: "RSYNC_SECRET_GALLERY"
+          value: "gallery:gallery"
+        - name: "RSYNC_VOLUME_CONFIG_GALLERY"
+          value: "[gallery]; path = /gallery; comment = PiGallery; read only = no"
+        image: "ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: "rsync"
+        name: "rsync"
+        ports:
+        - containerPort: 873
+          name: rsync
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: rsync
+        volumeMounts:
+        - mountPath: "/gallery"
+          name: "persistence"
+          subPath: "images"
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.tailscale.hostname }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: ghcr.io/tailscale/tailscale:v1.48.1
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - emptyDir: {}
+        name: "scratch"

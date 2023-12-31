@@ -1,0 +1,134 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: HomeAssistant
+---
+apiVersion: "v1"
+data:
+  PGID: "1061"
+  PUID: "1061"
+  TZ: "Australia/Melbourne"
+  emptyfile: ""
+  oneshot: "oneshot"
+  up: '/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/run'
+  run: |-
+    #!/usr/bin/with-contenv python
+    import os
+    import sys
+    import yaml
+
+
+    class include_dir_merge_named(object):
+        def __init__(self, dirname):
+            self.dirname = dirname
+
+
+    def include_dir_merge_named_r(
+        dumper: yaml.SafeDumper, obj: include_dir_merge_named
+    ) -> yaml.nodes.MappingNode:
+        return dumper.represent_scalar("!include_dir_merge_named", obj.dirname)
+
+
+    def include_dir_merge_named_c(
+        loader: yaml.SafeLoader, node: yaml.nodes.ScalarNode
+    ) -> include_dir_merge_named:
+        return include_dir_merge_named(loader.construct_scalar(node))
+
+
+    class include(object):
+        def __init__(self, value):
+            self.value = value
+
+
+    def include_r(dumper: yaml.SafeDumper, obj: include) -> yaml.nodes.MappingNode:
+        return dumper.represent_scalar("!include", obj.value)
+
+
+    def include_c(loader: yaml.SafeLoader, node: yaml.nodes.ScalarNode) -> include:
+        return include(loader.construct_scalar(node))
+
+
+    def get_dumper():
+        """Add representers to a YAML seriailizer."""
+        safe_dumper = yaml.SafeDumper
+        safe_dumper.add_representer(include, include_r)
+        safe_dumper.add_representer(include_dir_merge_named, include_dir_merge_named_r)
+        return safe_dumper
+
+
+    def get_loader():
+        """Add constructors to PyYAML loader."""
+        loader = yaml.SafeLoader
+        loader.add_constructor("!include", include_c)
+        loader.add_constructor("!include_dir_merge_named", include_dir_merge_named_c)
+        return loader
+
+
+    def update_configuration_yaml():
+        yaml_file = "/config/configuration.yaml"
+        config = {
+            "default_config": "",
+            "frontend": {"themes": include_dir_merge_named("themes")},
+            "automation": include("automations.yaml"),
+            "script": include("scripts.yaml"),
+            "scene": include("scenes.yaml"),
+        }
+        if os.path.exists(yaml_file):
+            with open(yaml_file, "r") as f:
+                config = yaml.load(f, Loader=get_loader())
+
+        if "http" not in config:
+            config["http"] = {}
+        config["http"]["use_x_forwarded_for"] = True
+        config["http"]["trusted_proxies"] = ["100.0.0.0/8", "127.0.0.1", "10.0.0.0/8"]
+
+        yaml.dump(config, sys.stdout, Dumper=get_dumper())
+
+        with open(yaml_file, "w") as f:
+            yaml.dump(config, f, Dumper=get_dumper())
+
+
+    def update_automations_yaml():
+        # create file if doesn't exist
+        yaml_file = "/config/automations.yaml"
+        if not os.path.exists(yaml_file):
+            with open(yaml_file, "w") as f:
+                f.write("")
+
+
+    def update_scripts_yaml():
+        # create file if doesn't exist
+        yaml_file = "/config/scripts.yaml"
+        if not os.path.exists(yaml_file):
+            with open(yaml_file, "w") as f:
+                f.write("")
+
+
+    def update_scenes_yaml():
+        # create file if doesn't exist
+        yaml_file = "/config/scenes.yaml"
+        if not os.path.exists(yaml_file):
+            with open(yaml_file, "w") as f:
+                f.write("")
+
+    def update_pip_packages_to_install_list():
+        # Append to /mod-pip-packages-to-install.list
+        pip_packages_to_install_list = "/mod-pip-packages-to-install.list"
+        with open(pip_packages_to_install_list, "a") as f:
+            f.write("\nRPi")
+            f.write("\nlgpio")
+            f.write("\nRPIO")
+
+    def main():
+        update_pip_packages_to_install_list
+        update_configuration_yaml()
+        update_automations_yaml()
+        update_scripts_yaml()
+        update_scenes_yaml()
+
+
+    if __name__ == "__main__":
+        main()
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}
