@@ -20,6 +20,7 @@ RUN \
 
 # Main image
 FROM docker.io/library/debian:bookworm-20231218
+ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN \
@@ -97,6 +98,9 @@ RUN python3 -m pip install --no-cache-dir --break-system-packages -r /usr/src/ap
 
 # Copy rootfs
 COPY rootfs /
+
+# Copy hooks
+COPY hooks/${hooks} /hooks
 
 # Install Python package
 RUN python3 -m pip install --no-cache-dir --break-system-packages  /usr/src/app
