@@ -1,0 +1,133 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: HomeAssistant
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: homeassistant
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
+        image: "lscr.io/linuxserver/homeassistant:2023.10.3-ls193"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: "http"
+        name: "homeassistant"
+        ports:
+        - containerPort: 8123
+          name: http
+        resources: {}
+        securityContext:
+          privileged: true
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: http
+        volumeMounts:
+        - mountPath: "/dev/ttyAMA0"
+          name: "ttyama0"
+        - mountPath: "/dev/gpiomem"
+          name: "gpiomem"
+        - mountPath: "/run/dbus"
+          name: "dbus"
+        - mountPath: "/config"
+          name: "persistence"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/dependencies.d/init-mods"
+          name: "config"
+          subPath: "emptyfile"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/run"
+          name: "config"
+          subPath: "run"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/type"
+          name: "config"
+          subPath: "oneshot"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/up"
+          name: "config"
+          subPath: "up"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-mods-end/dependencies.d/init-mod-homeassistant-k8s-config"
+          name: "config"
+          subPath: "emptyfile"
+        - mountPath: "/user/contents.d/init-mod-homeassistant-k8s-config"
+          name: "config"
+          subPath: "emptyfile"
+{% if _component.spec.homeassistant is defined 
+   and _component.spec.homeassistant.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.homeassistant.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /config
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag homeassistant
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.homeassistant.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.homeassistant.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.homeassistant.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.homeassistant.backup.b2AccountKey }}
+        image: docker.io/mazzolino/restic:1.7.0
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      hostNetwork: true
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - hostPath:
+          path: "/run/dbus"
+        name: "dbus"
+      - hostPath:
+          path: "/dev/ttyAMA0"
+        name: "ttyama0"
+      - hostPath:
+          path: "/dev/gpiomem"
+        name: "gpiomem"
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - name: "config"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: "emptyfile"
+                path: "emptyfile"
+              - key: "oneshot"
+                path: "oneshot"
+              - key: "run"
+                mode: 493
+                path: "run"
+              - key: "up"
+                path: "up"
+              name: "{{ _instance.metadata.name }}"
