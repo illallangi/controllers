@@ -26,30 +26,10 @@ spec:
             type: object
           spec:
             properties:
-
               fediverseRelay:
                 properties:
                   backup:
                     properties:
-                      schedule:
-                        default: "0 30 3 * * *"
-                        type: string
-                      resticPassword:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
                       b2AccountId:
                         oneOf:
                         - required:
@@ -83,6 +63,25 @@ spec:
                             type: object
                         type: object
                       b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
                         type: string
                     required:
                     - resticPassword
@@ -114,30 +113,10 @@ spec:
                 required:
                 - storage
                 type: object
-
               redis:
                 properties:
                   backup:
                     properties:
-                      schedule:
-                        default: "0 30 3 * * *"
-                        type: string
-                      resticPassword:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
                       b2AccountId:
                         oneOf:
                         - required:
@@ -171,6 +150,25 @@ spec:
                             type: object
                         type: object
                       b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
                         type: string
                     required:
                     - resticPassword
