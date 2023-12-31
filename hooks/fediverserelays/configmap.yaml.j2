@@ -1,0 +1,36 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: FediverseRelay
+---
+apiVersion: v1
+data:
+  config.yml.j2: |-
+{% raw %}
+    ACTOR_PEM: /var/lib/relay/actor.pem
+    REDIS_URL: redis://{{ 'REDIS_HOST' | getenv }}:{{ 'REDIS_PORT' | getenv }}
+    RELAY_BIND: 0.0.0.0:8080
+    RELAY_DOMAIN: {{ 'RELAY_DOMAIN' | getenv }}
+    RELAY_SERVICENAME: {{ 'RELAY_TITLE' | getenv }}
+    JOB_CONCURRENCY: 50
+    # RELAY_SUMMARY: |
+    # RELAY_ICON: https://
+    # RELAY_IMAGE: https://
+{% endraw %}
+  Caddyfile.j2: |-
+{% raw %}
+    {
+      admin off
+      debug
+    }
+    {{ 'RELAY_DOMAIN' | getenv }}:443 {
+      tls webmaster@illallangi.enterprises {
+        on_demand
+      }
+      reverse_proxy localhost:8080
+    }
+{% endraw %}
+  domain: {{ _instance.spec.tailscale.hostname }}.great-tuna.ts.net
+kind: ConfigMap
+metadata: {{ _instance.metadata }}

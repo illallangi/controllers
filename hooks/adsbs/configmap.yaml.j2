@@ -1,0 +1,16 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+apiVersion: "v1"
+data:
+  altitude: "{{ _instance.spec.position.altitude }}m"
+  latitude: "{{ _instance.spec.position.latitude }}"
+  longitude: "{{ _instance.spec.position.longitude }}"
+  title: "{{ _instance.spec.title }}"
+  timezone: "{{ _instance.spec.timezone | default('Australia/Melbourne') }}"
+  url: "{{ _instance.spec.url }}"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}
