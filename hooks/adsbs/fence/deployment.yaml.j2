@@ -1,0 +1,137 @@
+#!/usr/local/bin/hook
+---
+component: fence
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+{% if _instance.spec.fence is defined %}
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _component.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _component.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: fence
+      labels: {{ _component.selector }}
+    spec:
+      containers:
+      - env:
+        - name: "LOGLEVEL"
+          value: "info"
+        - name: "TZ"
+          valueFrom:
+            configMapKeyRef:
+              key: "timezone"
+              name: "{{ _instance.metadata.name }}"
+        image: "ghcr.io/sdr-enthusiasts/docker-planefence:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "fence"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/usr/share/planefence/persist"
+          name: "scratch"
+          subPath: "usr/share/planefence/persist"
+        - mountPath: "/usr/share/planefence/html"
+          name: "scratch"
+          subPath: "usr/share/planefence/html"
+        - mountPath: "/usr/share/socket30003/socket30003.pl"
+          name: {{ _component.metadata.name }}
+          subPath: "socket3003.pl"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - --extension=jinja2_ansible_filters.AnsibleCoreFiltersExtension
+        - --extension=jinja2_getenv_extension.GetenvExtension
+        - --strict
+        - --outfile=/output/planefence.config
+        - /input/planefence.config.j2
+        env:
+        - name: "FEEDER_LAT"
+          valueFrom:
+            configMapKeyRef:
+              key: "latitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "FEEDER_LON"
+          valueFrom:
+            configMapKeyRef:
+              key: "longitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "PF_MAXDIST"
+          valueFrom:
+            configMapKeyRef:
+              key: "distance"
+              name: "{{ _component.metadata.name }}"
+        - name: "PF_NAME"
+          valueFrom:
+            configMapKeyRef:
+              key: "title"
+              name: "{{ _instance.metadata.name }}"
+        - name: "PF_MAPURL"
+          valueFrom:
+            configMapKeyRef:
+              key: "url"
+              name: "{{ _instance.metadata.name }}"
+        - name: "PF_SOCK30003HOST"
+          value: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
+        - name: "PF_SOCK30003PORT"
+          value: "30003"
+        - name: "MASTODON_SERVER"
+          value: "{{ _instance.spec.fence.mastodon.server }}"
+        - name: "MASTODON_ACCESS_TOKEN"
+          valueFrom: {{ _instance.spec.fence.mastodon.accessToken }}
+        image: "ghcr.io/illallangi/init-jinja:v0.0.2"
+        imagePullPolicy: "IfNotPresent"
+        name: "init-jinja"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/output"
+          name: "scratch"
+          subPath: "usr/share/planefence/persist"
+        - mountPath: "/input/planefence.config.j2"
+          name: {{ _component.metadata.name }}
+          subPath: "planefence.config.j2"
+      - command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          set -euo pipefail
+          curl https://${MASTODON_SERVER}/api/v1/statuses -H "Authorization: Bearer ${MASTODON_ACCESS_TOKEN}" -F "status=${FEEDER_TITLE} is now online! #adsb #dump1090 #tar1090 #graphs1090 #ultrafeeder"
+        env:
+        - name: "FEEDER_TITLE"
+          valueFrom:
+            configMapKeyRef:
+              key: "title"
+              name: "{{ _instance.metadata.name }}"
+        - name: "MASTODON_SERVER"
+          value: "{{ _instance.spec.fence.mastodon.server }}"
+        - name: "MASTODON_ACCESS_TOKEN"
+          valueFrom: {{ _instance.spec.fence.mastodon.accessToken }}
+        image: "ghcr.io/illallangi/toolbx:latest"
+        name: "init-toot"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - emptyDir: {}
+        name: "scratch"
+      - projected:
+          sources:
+          - configMap:
+              items:
+              - key: "planefence.config.j2"
+                path: "planefence.config.j2"
+              - key: "socket3003.pl"
+                path: "socket3003.pl"
+                mode: 0755
+              name: {{ _component.metadata.name }}
+        name: {{ _component.metadata.name }}
+{% endif %}

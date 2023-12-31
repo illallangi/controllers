@@ -1,0 +1,26 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: PiGallery
+---
+apiVersion: "v1"
+data:
+  Users-authenticationRequired: "false"
+  Users-unAuthenticatedUserRole: "LimitedGuest"
+  Server-applicationTitle: "{{ _instance.spec.title | default(_instance.metadata.name) }}"
+  Server-publicUrl: "{{ _instance.spec.url | default('') }}"
+  Gallery-captionFirstNaming: "true"
+  Gallery-Lightbox-captionAlwaysOn: "true"
+  Search-enabled: "false"
+  Sharing-enabled: "false"
+  Gallery-NavBar-SortingGrouping-defaultPhotoSortingMethod-method: "Name"
+  Gallery-NavBar-SortingGrouping-defaultPhotoSortingMethod-ascending: "true"
+  Gallery-NavBar-SortingGrouping-defaultSearchSortingMethod-method: "Name"
+  Gallery-NavBar-SortingGrouping-defaultSearchSortingMethod-ascending: "true"
+  Gallery-NavBar-SortingGrouping-defaultPhotoGroupingMethod-method: "Name"
+  Gallery-NavBar-SortingGrouping-defaultPhotoGroupingMethod-ascending: "true"
+  Gallery-NavBar-SortingGrouping-defaultSearchGroupingMethod-method: "Name"
+  Gallery-NavBar-SortingGrouping-defaultSearchGroupingMethod-ascending: "true"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}

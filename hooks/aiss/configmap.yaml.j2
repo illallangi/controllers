@@ -1,0 +1,16 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: AIS
+---
+apiVersion: "v1"
+data:
+  RTLSDR_DEVICE_SERIAL: "109000"
+  STATION_NAME: "{{ _instance.spec.title }}"
+  SITESHOW: "true"
+  SXFEEDER_LAT: "{{ _instance.spec.position.latitude }}"
+  SXFEEDER_LON: "{{ _instance.spec.position.longitude }}"
+  SXFEEDER_ALT: "{{ _instance.spec.position.altitude }}m"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}

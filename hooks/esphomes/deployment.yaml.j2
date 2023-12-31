@@ -1,0 +1,45 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ESPHome
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: esphome
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - image: "{{ _instance.spec.esphome.image }}"
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          tcpSocket:
+            port: "http"
+        name: "esphome"
+        ports:
+        - containerPort: 6052
+          name: http
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: http
+        volumeMounts:
+        - mountPath: /config
+          name: persistence
+      serviceAccount: {{ _instance.metadata.name }}
+      serviceAccountName: {{ _instance.metadata.name }}
+      volumes:
+      - persistentVolumeClaim:
+          claimName: {{ _instance.metadata.name }}
+        name: "persistence"
