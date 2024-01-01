@@ -1,0 +1,15 @@
+#!/usr/local/bin/hook
+---
+component: smtp
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Mastodon
+---
+apiVersion: "v1"
+data:
+  host: "{{ _component.spec.smtp.host }}"
+  port: "{{ _component.spec.smtp.port }}"
+  username: "{{ _component.spec.smtp.username }}"
+  from: "{{ _component.spec.smtp.from }}"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}

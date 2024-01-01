@@ -22,6 +22,8 @@ RUN \
 FROM docker.io/library/debian:bookworm-20231218
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+LABEL \
+  org.opencontainers.image.source=https://github.com/illallangi/hook-operator
 
 RUN \
 # Install packages
