@@ -67,6 +67,7 @@ def main(
                             ],
                             "executeHookOnSynchronization": True,
                             "keepFullObjectsInMemory": True,
+                            "queue": f'{k["apiVersion"]}/{k["kind"]}{path.replace(hooksdir, "")}',
                         }
                         for k in options["kinds"]
                     ],
