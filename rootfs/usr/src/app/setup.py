@@ -8,7 +8,7 @@ setuptools.setup(
     description="TODO: SET DESCRIPTION",
     long_description="TODO: SET LONG DESCRIPTION",
     long_description_content_type="text/markdown",
-    url="https://github.com/illallangi/hook-operator",
+    url="https://github.com/illallangi/controllers",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
