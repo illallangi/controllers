@@ -39,17 +39,17 @@ spec:
           failureThreshold: 30
         volumeMounts:
         - mountPath: "/app/data/images"
-          name: "persistence"
-          subPath: "images"
+          name: "data"
+          subPath: "{{ _component.spec.pigallery.data.subPath }}"
         - mountPath: "/app/data/config"
-          name: "scratch"
-          subPath: "config"
+          name: "persistence"
+          subPath: "app/data/config"
         - mountPath: "/app/data/db"
-          name: "scratch"
-          subPath: "db"
+          name: "persistence"
+          subPath: "app/data/config"
         - mountPath: "/app/data/tmp"
-          name: "scratch"
-          subPath: "tmp"
+          name: "persistence"
+          subPath: "app/data/tmp"
       dnsConfig:
         options:
           - name: ndots
@@ -60,5 +60,6 @@ spec:
       - persistentVolumeClaim:
           claimName: "{{ _instance.metadata.name }}"
         name: "persistence"
-      - emptyDir: {}
-        name: "scratch"
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.spec.pigallery.data.name }}"
+        name: "data"

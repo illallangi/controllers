@@ -53,15 +53,48 @@ spec:
                 type: object
               pigallery:
                 properties:
+                  data:
+                    properties:
+                      name:
+                        type: string
+                      subPath:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
                   title:
                     type: string
                   webDomain:
                     type: string
                 required:
+                - data
+                - storage
                 - webDomain
                 type: object
             required:
             - cloudflare
+            - pigallery
             type: object
         required:
         - apiVersion
