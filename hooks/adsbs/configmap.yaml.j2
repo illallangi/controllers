@@ -6,11 +6,11 @@ kinds:
 ---
 apiVersion: "v1"
 data:
-  altitude: "{{ _instance.spec.position.altitude }}m"
-  latitude: "{{ _instance.spec.position.latitude }}"
-  longitude: "{{ _instance.spec.position.longitude }}"
-  title: "{{ _instance.spec.title }}"
+  altitude: "{{ _instance.spec.adsb.position.altitude }}m"
+  latitude: "{{ _instance.spec.adsb.position.latitude }}"
+  longitude: "{{ _instance.spec.adsb.position.longitude }}"
+  title: "{{ _instance.spec.adsb.title }}"
   timezone: "{{ _instance.spec.timezone | default('Australia/Melbourne') }}"
-  url: "{{ _instance.spec.url }}"
+  url: "{{ _instance.spec.adsb.webDomain }}"
 kind: "ConfigMap"
 metadata: {{ _instance.metadata }}

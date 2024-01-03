@@ -5,10 +5,10 @@ kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
   kind: ADSB
 ---
-{% if _instance.spec.fence is defined %}
+{% if _instance.spec.adsb.fence is defined %}
 apiVersion: "v1"
 data:
-  distance: "{{ _instance.spec.fence.distance }}"
+  distance: "{{ _instance.spec.adsb.fence.distance }}"
   planefence.config.j2: |-
 {%- raw %}
     FEEDER_LAT={{ 'FEEDER_LAT' | getenv }}

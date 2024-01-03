@@ -14,7 +14,11 @@ spec:
     singular: adsb
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.adsb.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -28,6 +32,67 @@ spec:
             properties:
               adsb:
                 properties:
+                  backup:
+                    properties:
+                      b2AccountId:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2AccountKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
+                        type: string
+                    required:
+                    - resticPassword
+                    - b2AccountId
+                    - b2AccountKey
+                    - b2repo
+                    type: object
                   fence:
                     properties:
                       distance:
@@ -94,6 +159,27 @@ spec:
                     - latitude
                     - longitude
                     type: object
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
                   title:
                     default: ADSB
                     type: string
@@ -101,6 +187,7 @@ spec:
                     type: string
                 required:
                 - position
+                - storage
                 - webDomain
                 type: object
               cloudflare:
