@@ -14,7 +14,11 @@ spec:
     singular: pigallery
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.pigallery.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -47,36 +51,50 @@ spec:
                 required:
                 - apiToken
                 type: object
-              tailscale:
+              pigallery:
                 properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
+                  data:
                     properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
+                      name:
+                        type: string
+                      subPath:
+                        type: string
+                    required:
+                    - name
                     type: object
-                  hostname:
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
+                  title:
+                    type: string
+                  webDomain:
                     type: string
                 required:
-                - apiToken
-                - hostname
+                - data
+                - storage
+                - webDomain
                 type: object
-              title:
-                type: string
-              url:
-                type: string
             required:
             - cloudflare
+            - pigallery
             type: object
         required:
         - apiVersion

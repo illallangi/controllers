@@ -16,5 +16,5 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 16Gi
-  storageClassName: local-path
+      storage: {{ _instance.spec.pigallery.storage.resources.requests.storage }}
+  storageClassName: {{ _instance.spec.pigallery.storage.storageClassName }}
