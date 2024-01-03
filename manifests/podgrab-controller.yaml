@@ -14,7 +14,11 @@ spec:
     singular: podgrab
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.podgrab.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -140,9 +144,12 @@ spec:
                     required:
                     - storageClassName
                     type: object
+                  webDomain:
+                    type: string
                 required:
                 - data
                 - storage
+                - webDomain
                 type: object
             required:
             - cloudflare
