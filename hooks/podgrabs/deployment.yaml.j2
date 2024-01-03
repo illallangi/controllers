@@ -71,10 +71,6 @@ spec:
         - mountPath: "/config"
           name: "persistence"
           subPath: "config"
-        - mountPath: "/assets"
-          name: "data"
-          subPath: "{{ _component.spec.podgrab.data.subPath }}"
-        name: "data"
 {% endif %}
       dnsConfig:
         options:
