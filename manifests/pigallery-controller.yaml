@@ -14,7 +14,11 @@ spec:
     singular: pigallery
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.pigallery.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -47,36 +51,111 @@ spec:
                 required:
                 - apiToken
                 type: object
-              tailscale:
+              pigallery:
                 properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
+                  backup:
                     properties:
-                      secretKeyRef:
+                      b2AccountId:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
                         properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
                         type: object
+                      b2AccountKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
+                        type: string
+                    required:
+                    - resticPassword
+                    - b2AccountId
+                    - b2AccountKey
+                    - b2repo
                     type: object
-                  hostname:
+                  data:
+                    properties:
+                      name:
+                        type: string
+                      subPath:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
+                  title:
+                    type: string
+                  webDomain:
                     type: string
                 required:
-                - apiToken
-                - hostname
+                - data
+                - storage
+                - webDomain
                 type: object
-              title:
-                type: string
-              url:
-                type: string
             required:
             - cloudflare
+            - pigallery
             type: object
         required:
         - apiVersion

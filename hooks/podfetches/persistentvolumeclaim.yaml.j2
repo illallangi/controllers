@@ -2,7 +2,7 @@
 ---
 kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
-  kind: PiGallery
+  kind: PodFetch
 operation: CreateIfNotExists
 ---
 apiVersion: v1
@@ -16,5 +16,5 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: {{ _instance.spec.pigallery.storage.resources.requests.storage }}
-  storageClassName: {{ _instance.spec.pigallery.storage.storageClassName }}
+      storage: {{ _instance.spec.podfetch.storage.resources.requests.storage }}
+  storageClassName: {{ _instance.spec.podfetch.storage.storageClassName }}

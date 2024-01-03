@@ -3,19 +3,19 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/name: podgrab-operator
-  name: podgrabs.illallangi.enterprises
+    app.kubernetes.io/name: podfetch-operator
+  name: podfetches.illallangi.enterprises
 spec:
   group: illallangi.enterprises
   names:
-    kind: Podgrab
-    listKind: PodgrabList
-    plural: podgrabs
-    singular: podgrab
+    kind: PodFetch
+    listKind: PodFetchList
+    plural: podfetches
+    singular: podfetch
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.podgrab.webDomain
+    - jsonPath: .spec.podfetch.webDomain
       name: Domain
       type: string
     name: v1alpha1
@@ -51,7 +51,7 @@ spec:
                 required:
                 - apiToken
                 type: object
-              podgrab:
+              podfetch:
                 properties:
                   backup:
                     properties:
@@ -153,7 +153,7 @@ spec:
                 type: object
             required:
             - cloudflare
-            - podgrab
+            - podfetch
             type: object
         required:
         - apiVersion
@@ -168,21 +168,21 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/name: podgrab-controller
-  name: podgrab-controller
+    app.kubernetes.io/name: podfetch-controller
+  name: podfetch-controller
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: podgrab-controller
-  name: podgrab-controller
+    app.kubernetes.io/name: podfetch-controller
+  name: podfetch-controller
 rules:
 - apiGroups:
   - illallangi.enterprises
   resources:
-  - podgrabs
+  - podfetches
   verbs:
   - get
   - watch
@@ -230,41 +230,41 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: podgrab-controller
-  name: podgrab-controller
+    app.kubernetes.io/name: podfetch-controller
+  name: podfetch-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: podgrab-controller
+  name: podfetch-controller
 subjects:
 - kind: ServiceAccount
-  name: podgrab-controller
+  name: podfetch-controller
   namespace: kube-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: podgrab-controller
-  name: podgrab-controller
+    app.kubernetes.io/name: podfetch-controller
+  name: podfetch-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: podgrab-controller
+      app.kubernetes.io/name: podfetch-controller
   strategy:
     type: Recreate
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: podgrab-controller
+        kubectl.kubernetes.io/default-container: podfetch-controller
       labels:
-        app.kubernetes.io/name: podgrab-controller
+        app.kubernetes.io/name: podfetch-controller
     spec:
       containers:
-      - image: ghcr.io/illallangi/podgrab-controller:latest
+      - image: ghcr.io/illallangi/podfetch-controller:latest
         imagePullPolicy: Always
-        name: podgrab-controller
-      serviceAccount: podgrab-controller
-      serviceAccountName: podgrab-controller
+        name: podfetch-controller
+      serviceAccount: podfetch-controller
+      serviceAccountName: podfetch-controller

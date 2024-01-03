@@ -3,28 +3,18 @@
 component: tailscale
 kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
-  kind: PiGallery
+  kind: Rsync
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: RoleBinding
 metadata:
   labels: {{ _component.metadata.labels }}
   name: {{ _component.metadata.name }}
   namespace: {{ _component.metadata.namespace }}
-rules:
-- apiGroups:
-  - ""
-  resourceNames:
-  - {{ _component.metadata.name }}
-  resources:
-  - secrets
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - create
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ _component.metadata.name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ _instance.metadata.name }}
