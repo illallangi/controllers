@@ -47,10 +47,15 @@ spec:
                 required:
                 - apiToken
                 type: object
-              title:
-                type: string
-              url:
-                type: string
+              pigallery:
+                properties:
+                  title:
+                    type: string
+                  webDomain:
+                    type: string
+                required:
+                - webDomain
+                type: object
             required:
             - cloudflare
             type: object
