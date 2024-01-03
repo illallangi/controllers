@@ -58,7 +58,7 @@ spec:
           - name: "BACKUP_CRON"
             value: "{{ _component.spec.pigallery.backup.schedule }}"
           - name: "RESTIC_BACKUP_SOURCES"
-            value: /config
+            value: /app/data
           - name: "RESTIC_BACKUP_ARGS"
             value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag pigallery
           - name: "RESTIC_FORGET_ARGS"
@@ -73,13 +73,13 @@ spec:
             valueFrom: {{ _component.spec.pigallery.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.pigallery.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.0
+        image: docker.io/mazzolino/restic:1.7.1
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
-        - mountPath: "/config"
+        - mountPath: "/app/data"
           name: "persistence"
-          subPath: "config"
+          subPath: "app/data"
 {% endif %}
       dnsConfig:
         options:
