@@ -26,6 +26,83 @@ spec:
             type: object
           spec:
             properties:
+              adsb:
+                properties:
+                  fence:
+                    properties:
+                      distance:
+                        type: number
+                      mastodon:
+                        properties:
+                          accessToken:
+                            oneOf:
+                            - required:
+                              - secretKeyRef
+                            properties:
+                              secretKeyRef:
+                                properties:
+                                  key:
+                                    type: string
+                                  name:
+                                    type: string
+                                required:
+                                - key
+                                - name
+                                type: object
+                            type: object
+                          server:
+                            type: string
+                        required:
+                        - accessToken
+                        - server
+                        type: object
+                    required:
+                    - distance
+                    - mastodon
+                    type: object
+                  fr24feed:
+                    properties:
+                      sharingKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                    required:
+                    - sharingKey
+                    type: object
+                  position:
+                    properties:
+                      altitude:
+                        type: number
+                      latitude:
+                        type: number
+                      longitude:
+                        type: number
+                    required:
+                    - altitude
+                    - latitude
+                    - longitude
+                    type: object
+                  title:
+                    default: ADSB
+                    type: string
+                  webDomain:
+                    type: string
+                required:
+                - position
+                - webDomain
+                type: object
               cloudflare:
                 properties:
                   apiToken:
@@ -47,81 +124,9 @@ spec:
                 required:
                 - apiToken
                 type: object
-              fence:
-                properties:
-                  distance:
-                    type: number
-                  mastodon:
-                    properties:
-                      accessToken:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
-                      server:
-                        type: string
-                    required:
-                    - accessToken
-                    - server
-                    type: object
-                required:
-                - distance
-                - mastodon
-                type: object
-              fr24feed:
-                properties:
-                  sharingKey:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - sharingKey
-                type: object
-              position:
-                properties:
-                  altitude:
-                    type: number
-                  latitude:
-                    type: number
-                  longitude:
-                    type: number
-                required:
-                - altitude
-                - latitude
-                - longitude
-                type: object
-              title:
-                default: ADSB
-                type: string
-              url:
-                type: string
             required:
             - cloudflare
-            - position
-            - url
+            - adsb
             type: object
         required:
         - apiVersion
