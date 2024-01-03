@@ -1,0 +1,66 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Rsync
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: rsync
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        # - name: "RSYNC_SECRET_{{ _instance.metadata.name | upper | replace("-", "_") }}"
+        #   value: "data:data"
+        - name: "RSYNC_VOLUME_CONFIG_{{ _instance.metadata.name | upper | replace("-", "_") }}"
+          value: "[{{ _instance.metadata.name | lower | replace("-", "_") }}]; path = /data; comment = {{ _instance.metadata.name | replace("-", " ") }}; read only = no"
+        image: "ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: "rsync"
+        name: "rsync"
+        ports:
+        - containerPort: 873
+          name: rsync
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: rsync
+        volumeMounts:
+        - mountPath: "/data"
+          name: "data"
+          subPath: "{{ _component.spec.rsync.data.subPath }}"
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.tailscale.hostname }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: ghcr.io/tailscale/tailscale:v1.56.1
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.spec.rsync.data.name }}"
+        name: "data"
