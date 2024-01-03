@@ -50,6 +50,37 @@ spec:
         - mountPath: "/app/data/tmp"
           name: "persistence"
           subPath: "app/data/tmp"
+{% if _component.spec.pigallery is defined
+   and _component.spec.pigallery.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.pigallery.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /config
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag pigallery
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.pigallery.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.pigallery.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.pigallery.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.pigallery.backup.b2AccountKey }}
+        image: docker.io/mazzolino/restic:1.7.0
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% endif %}
       dnsConfig:
         options:
           - name: ndots
