@@ -55,7 +55,7 @@ spec:
           value: --hostname={{ _instance.spec.tailscale.hostname }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
-        image: ghcr.io/tailscale/tailscale:v1.48.1
+        image: ghcr.io/tailscale/tailscale:v1.56.1
         imagePullPolicy: IfNotPresent
         name: tailscale
         resources: {}
