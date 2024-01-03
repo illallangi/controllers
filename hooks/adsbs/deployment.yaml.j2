@@ -8,7 +8,7 @@ apiVersion: "apps/v1"
 kind: "Deployment"
 metadata: {{ _instance.metadata }}
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels: {{ _instance.selector }}
   strategy:
@@ -131,6 +131,40 @@ spec:
         - mountPath: "/var/log"
           name: "scratch"
           subPath: "var/log"
+{% if _component.spec.adsb is defined
+   and _component.spec.adsb.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.adsb.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /var/globe_history /var/lib/collectd
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag adsb
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.adsb.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.adsb.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.adsb.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.adsb.backup.b2AccountKey }}
+        image: docker.io/mazzolino/restic:1.7.0
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: /var/globe_history
+          name: persistence
+          subPath: "var/globe_history"
+        - mountPath: /var/lib/collectd
+          name: persistence
+          subPath: "var/lib/collectd"
+{% endif %}
       dnsConfig:
         options:
           - name: ndots
