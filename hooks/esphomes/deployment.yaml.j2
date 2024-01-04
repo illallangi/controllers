@@ -37,6 +37,7 @@ spec:
         volumeMounts:
         - mountPath: /config
           name: persistence
+          subPath: config
 {% if _component.spec.esphome is defined
    and _component.spec.esphome.backup is defined %}
       - env:
