@@ -14,7 +14,11 @@ spec:
     singular: homeassistant
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.homeassistant.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -131,8 +135,11 @@ spec:
                     required:
                     - storageClassName
                     type: object
+                  webDomain:
+                    type: string
                 required:
                 - storage
+                - webDomain
                 type: object
             required:
             - cloudflare
