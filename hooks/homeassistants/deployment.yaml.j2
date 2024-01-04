@@ -48,6 +48,7 @@ spec:
           name: "dbus"
         - mountPath: "/config"
           name: "persistence"
+          subPath: "config"
         - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/dependencies.d/init-mods"
           name: "config"
           subPath: "emptyfile"
@@ -95,6 +96,7 @@ spec:
         volumeMounts:
         - mountPath: "/config"
           name: "persistence"
+          subPath: "config"
 {% endif %}
       dnsConfig:
         options:
