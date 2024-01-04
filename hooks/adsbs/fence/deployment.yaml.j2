@@ -5,7 +5,7 @@ kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
   kind: ADSB
 ---
-{% if _instance.spec.fence is defined %}
+{% if _instance.spec.adsb.fence is defined %}
 apiVersion: "apps/v1"
 kind: "Deployment"
 metadata: {{ _component.metadata }}
@@ -86,9 +86,9 @@ spec:
         - name: "PF_SOCK30003PORT"
           value: "30003"
         - name: "MASTODON_SERVER"
-          value: "{{ _instance.spec.fence.mastodon.server }}"
+          value: "{{ _instance.spec.adsb.fence.mastodon.server }}"
         - name: "MASTODON_ACCESS_TOKEN"
-          valueFrom: {{ _instance.spec.fence.mastodon.accessToken }}
+          valueFrom: {{ _instance.spec.adsb.fence.mastodon.accessToken }}
         image: "ghcr.io/illallangi/init-jinja:v0.0.2"
         imagePullPolicy: "IfNotPresent"
         name: "init-jinja"
@@ -113,9 +113,9 @@ spec:
               key: "title"
               name: "{{ _instance.metadata.name }}"
         - name: "MASTODON_SERVER"
-          value: "{{ _instance.spec.fence.mastodon.server }}"
+          value: "{{ _instance.spec.adsb.fence.mastodon.server }}"
         - name: "MASTODON_ACCESS_TOKEN"
-          valueFrom: {{ _instance.spec.fence.mastodon.accessToken }}
+          valueFrom: {{ _instance.spec.adsb.fence.mastodon.accessToken }}
         image: "ghcr.io/illallangi/toolbx:latest"
         name: "init-toot"
       serviceAccount: "{{ _instance.metadata.name }}"

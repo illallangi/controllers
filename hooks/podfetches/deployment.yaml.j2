@@ -52,7 +52,7 @@ spec:
           - name: "BACKUP_CRON"
             value: "{{ _component.spec.podfetch.backup.schedule }}"
           - name: "RESTIC_BACKUP_SOURCES"
-            value: /config
+            value: /app/db
           - name: "RESTIC_BACKUP_ARGS"
             value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag podfetch
           - name: "RESTIC_FORGET_ARGS"
@@ -67,16 +67,13 @@ spec:
             valueFrom: {{ _component.spec.podfetch.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.podfetch.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.0
+        image: docker.io/mazzolino/restic:1.7.1
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
-        - mountPath: "/config"
+        - mountPath: "/app/db"
           name: "persistence"
-          subPath: "config"
-        - mountPath: "/assets"
-          name: "data"
-          subPath: "{{ _component.spec.podfetch.data.subPath }}"
+          subPath: "app/db"
         name: "data"
 {% endif %}
       dnsConfig:

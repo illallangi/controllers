@@ -14,7 +14,11 @@ spec:
     singular: esphome
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.pigallery.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -49,6 +53,67 @@ spec:
                 type: object
               esphome:
                 properties:
+                  backup:
+                    properties:
+                      b2AccountId:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2AccountKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
+                        type: string
+                    required:
+                    - resticPassword
+                    - b2AccountId
+                    - b2AccountKey
+                    - b2repo
+                    type: object
                   image:
                     type: string
                   storage:
@@ -56,14 +121,14 @@ spec:
                       resources:
                         default:
                           requests:
-                            storage: 1Gi
+                            storage: 16Gi
                         properties:
                           requests:
                             default:
-                              storage: 1Gi
+                              storage: 16Gi
                             properties:
                               storage:
-                                default: 1Gi
+                                default: 16Gi
                                 type: string
                             type: object
                         type: object
@@ -72,9 +137,12 @@ spec:
                     required:
                     - storageClassName
                     type: object
+                  webDomain:
+                    type: string
                 required:
                 - image
                 - storage
+                - webDomain
                 type: object
             required:
             - cloudflare

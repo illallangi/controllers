@@ -64,7 +64,7 @@ spec:
             valueFrom: {{ _component.spec.podgrab.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.podgrab.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.0
+        image: docker.io/mazzolino/restic:1.7.1
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

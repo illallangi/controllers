@@ -48,6 +48,7 @@ spec:
           name: "dbus"
         - mountPath: "/config"
           name: "persistence"
+          subPath: "config"
         - mountPath: "/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/dependencies.d/init-mods"
           name: "config"
           subPath: "emptyfile"
@@ -89,12 +90,13 @@ spec:
             valueFrom: {{ _component.spec.homeassistant.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.homeassistant.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.0
+        image: docker.io/mazzolino/restic:1.7.1
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
         - mountPath: "/config"
           name: "persistence"
+          subPath: "config"
 {% endif %}
       dnsConfig:
         options:
