@@ -14,7 +14,11 @@ spec:
     singular: esphome
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.pigallery.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -133,9 +137,12 @@ spec:
                     required:
                     - storageClassName
                     type: object
+                  webDomain:
+                    type: string
                 required:
                 - image
                 - storage
+                - webDomain
                 type: object
             required:
             - cloudflare
