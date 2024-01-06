@@ -179,6 +179,7 @@ rules:
   - configmaps
   - persistentvolumeclaims
   - pods
+  - secrets
   - serviceaccounts
   - services
   verbs:
