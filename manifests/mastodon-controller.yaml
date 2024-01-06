@@ -18,6 +18,7 @@ spec:
     - jsonPath: .spec.mastodon.webDomain
       name: Domain
       type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
