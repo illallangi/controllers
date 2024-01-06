@@ -1,0 +1,17 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ESPHome
+---
+apiVersion: "v1"
+data:
+  Caddyfile: |-
+    {{ _instance.spec.tailscale.hostname }}.great-tuna.ts.net:443 {
+      tls webmaster@illallangi.enterprises {
+        on_demand
+      }
+      reverse_proxy localhost:6052
+    }
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}

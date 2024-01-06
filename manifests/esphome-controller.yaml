@@ -30,27 +30,6 @@ spec:
             type: object
           spec:
             properties:
-              cloudflare:
-                properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - apiToken
-                type: object
               esphome:
                 properties:
                   backup:
@@ -114,8 +93,6 @@ spec:
                     - b2AccountKey
                     - b2repo
                     type: object
-                  image:
-                    type: string
                   storage:
                     properties:
                       resources:
@@ -137,16 +114,36 @@ spec:
                     required:
                     - storageClassName
                     type: object
-                  webDomain:
+                required:
+                - storage
+                type: object
+              tailscale:
+                properties:
+                  apiToken:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
+                  hostname:
                     type: string
                 required:
-                - image
-                - storage
-                - webDomain
+                - apiToken
+                - hostname
                 type: object
             required:
-            - cloudflare
             - esphome
+            - tailscale
             type: object
         required:
         - apiVersion
@@ -186,6 +183,7 @@ rules:
   - configmaps
   - persistentvolumeclaims
   - pods
+  - secrets
   - serviceaccounts
   - services
   verbs:

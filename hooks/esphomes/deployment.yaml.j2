@@ -20,7 +20,7 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - image: "{{ _instance.spec.esphome.image }}"
+      - image: ghcr.io/esphome/esphome:2023.12.5
         imagePullPolicy: IfNotPresent
         livenessProbe:
           tcpSocket:
@@ -38,6 +38,33 @@ spec:
         - mountPath: /config
           name: persistence
           subPath: config
+{% if _instance.spec.tailscale is defined %}
+      - image: docker.io/library/caddy:2.6.4
+        imagePullPolicy: IfNotPresent
+        name: caddy
+        volumeMounts:
+        - mountPath: /etc/caddy/Caddyfile
+          name: config
+          subPath: Caddyfile
+        - mountPath: "/var/run/tailscale"
+          name: "persistence"
+          subPath: "var/run/tailscale"
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.tailscale.hostname }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: ghcr.io/tailscale/tailscale:v1.56.1
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+        volumeMounts:
+        - mountPath: /tmp
+          name: persistence
+          subPath: var/run/tailscale
+{% endif %}
 {% if _component.spec.esphome is defined
    and _component.spec.esphome.backup is defined %}
       - env:
@@ -61,7 +88,7 @@ spec:
             valueFrom: {{ _component.spec.esphome.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.esphome.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.0
+        image: docker.io/mazzolino/restic:1.7.1
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
@@ -69,9 +96,16 @@ spec:
           name: persistence
           subPath: config
 {% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       serviceAccount: {{ _instance.metadata.name }}
       serviceAccountName: {{ _instance.metadata.name }}
       volumes:
       - persistentVolumeClaim:
           claimName: {{ _instance.metadata.name }}
         name: "persistence"
+      - configMap:
+          name: "{{ _instance.metadata.name }}"
+        name: "config"
