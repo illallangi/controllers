@@ -15,7 +15,7 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.pigallery.webDomain
+    - jsonPath: .spec.esphome.webDomain
       name: Domain
       type: string
     name: v1alpha1
@@ -114,8 +114,12 @@ spec:
                     required:
                     - storageClassName
                     type: object
+                  webDomain:
+                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
+                    type: string
                 required:
                 - storage
+                - webDomain
                 type: object
               tailscale:
                 properties:
@@ -135,11 +139,8 @@ spec:
                         - name
                         type: object
                     type: object
-                  hostname:
-                    type: string
                 required:
                 - apiToken
-                - hostname
                 type: object
             required:
             - esphome

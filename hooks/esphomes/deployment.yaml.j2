@@ -44,7 +44,7 @@ spec:
         name: caddy
         volumeMounts:
         - mountPath: /etc/caddy/Caddyfile
-          name: config
+          name: tailscale
           subPath: Caddyfile
         - mountPath: "/var/run/tailscale"
           name: "persistence"
@@ -53,7 +53,7 @@ spec:
         - name: TS_KUBE_SECRET
           value: {{ _instance.metadata.name }}-tailscale
         - name: TS_EXTRA_ARGS
-          value: --hostname={{ _instance.spec.tailscale.hostname }}
+          value: --hostname={{ _instance.spec.esphome.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
         image: ghcr.io/tailscale/tailscale:v1.56.1
@@ -106,6 +106,11 @@ spec:
       - persistentVolumeClaim:
           claimName: {{ _instance.metadata.name }}
         name: "persistence"
-      - configMap:
-          name: "{{ _instance.metadata.name }}"
-        name: "config"
+      - name: "tailscale"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: "Caddyfile"
+                path: "Caddyfile"
+              name: "{{ _instance.metadata.name }}-tailscale"
