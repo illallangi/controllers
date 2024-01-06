@@ -18,6 +18,7 @@ spec:
     - jsonPath: .spec.tailscale.hostname
       name: Hostname
       type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
