@@ -44,7 +44,7 @@ spec:
         name: caddy
         volumeMounts:
         - mountPath: /etc/caddy/Caddyfile
-          name: config
+          name: tailscale
           subPath: Caddyfile
         - mountPath: "/var/run/tailscale"
           name: "persistence"
@@ -107,5 +107,5 @@ spec:
           claimName: "{{ _instance.metadata.name }}"
         name: "persistence"
       - configMap:
-          name: "{{ _instance.metadata.name }}"
-        name: "config"
+          name: "{{ _instance.metadata.name }}-tailscale"
+        name: "tailscale"

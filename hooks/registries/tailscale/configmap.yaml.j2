@@ -1,8 +1,9 @@
 #!/usr/local/bin/hook
 ---
+component: tailscale
 kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
-  kind: ESPHome
+  kind: Registry
 ---
 apiVersion: "v1"
 data:
@@ -14,4 +15,4 @@ data:
       reverse_proxy localhost:6052
     }
 kind: "ConfigMap"
-metadata: {{ _instance.metadata }}
+metadata: {{ _component.metadata }}
