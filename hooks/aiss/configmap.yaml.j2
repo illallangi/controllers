@@ -6,11 +6,9 @@ kinds:
 ---
 apiVersion: "v1"
 data:
-  RTLSDR_DEVICE_SERIAL: "109000"
-  STATION_NAME: "{{ _instance.spec.title }}"
-  SITESHOW: "true"
-  SXFEEDER_LAT: "{{ _instance.spec.position.latitude }}"
-  SXFEEDER_LON: "{{ _instance.spec.position.longitude }}"
-  SXFEEDER_ALT: "{{ _instance.spec.position.altitude }}m"
+  latitude: "{{ _instance.spec.ais.position.latitude }}"
+  longitude: "{{ _instance.spec.ais.position.longitude }}"
+  title: "{{ _instance.spec.ais.title | replace(' ', '&nbsp;') }}"
+  udpFeeds: {% for feed in _instance.spec.ais.udpFeeds %}{{ feed.host }}:{{ feed.port }}{% if loop.last == false %},{% endif %}{% endfor %}
 kind: "ConfigMap"
 metadata: {{ _instance.metadata }}

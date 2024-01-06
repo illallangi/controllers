@@ -1,0 +1,17 @@
+#!/usr/local/bin/hook
+---
+component: cloudflare
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: AIS
+---
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "RoleBinding"
+metadata: {{ _component.metadata }}
+roleRef:
+  apiGroup: "rbac.authorization.k8s.io"
+  kind: "Role"
+  name: "{{ _component.metadata.name }}"
+subjects:
+- kind: "ServiceAccount"
+  name: "{{ _instance.metadata.name }}"

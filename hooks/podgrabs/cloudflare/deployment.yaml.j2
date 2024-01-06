@@ -33,12 +33,6 @@ spec:
         imagePullPolicy: "IfNotPresent"
         name: "cloudflare"
         resources: {}
-      serviceAccount: "{{ _instance.metadata.name }}"
-      serviceAccountName: "{{ _instance.metadata.name }}"
-      volumes:
-      - configMap:
-          name: "{{ _component.metadata.name }}"
-        name: "config"
       initContainers:
       - args:
         - "service"
@@ -48,3 +42,5 @@ spec:
         imagePullPolicy: "IfNotPresent"
         name: "init"
         resources: {}
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
