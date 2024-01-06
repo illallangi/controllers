@@ -1,3 +1,4 @@
 click
 python-frontmatter
 Jinja2
+jinja2-ansible-filters
