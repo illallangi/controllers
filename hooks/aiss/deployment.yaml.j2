@@ -8,7 +8,7 @@ apiVersion: "apps/v1"
 kind: "Deployment"
 metadata: {{ _instance.metadata }}
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels: {{ _instance.selector }}
   strategy:
@@ -20,9 +20,45 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - envFrom:
-        - configMapRef:
-            name: "{{ _instance.metadata.name }}"
+      - env:
+        - name: VERBOSE_LOGGING
+          value: ""
+        - name: SHARING_KEY
+          valueFrom: {{ _component.spec.ais.shipXplorer.sharingKey }}
+        - name: SERIAL_NUMBER
+          valueFrom: {{ _component.spec.ais.shipXplorer.serialNumber }}
+        - name: RTLSDR_DEVICE_SERIAL
+          value: "16200"
+        - name: UDP_FEEDS
+          valueFrom:
+            configMapKeyRef:
+              key: updFeeds
+              name: "{{ _instance.metadata.name }}"
+        - name: RTLSDR_DEVICE_GAIN
+          value: auto
+        - name: AISCATCHER_EXTRA_OPTIONS
+          value: -p 0 -a 192K -m 4 -go AFC_WIDE on
+        - name: STATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: title
+              name: "{{ _instance.metadata.name }}"
+        - name: STATION_HISTORY
+          value: "3600"
+        - name: BACKUP_INTERVAL
+          value: "5"
+        - name: SXFEEDER_LON
+          valueFrom:
+            configMapKeyRef:
+              key: longitude
+              name: "{{ _instance.metadata.name }}"
+        - name: SXFEEDER_LAT
+          valueFrom:
+            configMapKeyRef:
+              key: latitude
+              name: "{{ _instance.metadata.name }}"
+        - name: PROMETHEUS_ENABLE
+          value: "false"
         image: "ghcr.io/sdr-enthusiasts/shipxplorer:latest"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
@@ -40,14 +76,19 @@ spec:
           tcpSocket:
             port: http
         volumeMounts:
-        - mountPath: /opt/ais/shipxplorer/data
+        - mountPath: /data
           name: persistence
-          subPath: "opt/ais/shipxplorer/data"
+          subPath: "data"
         - mountPath: "/dev/bus/usb"
           name: "usb"
-        - mountPath: "/tmp"
-          name: "scratch"
-          subPath: "tmp"
+        - mountPath: /etc/localtime
+          name: localtime
+        - mountPath: /etc/timezone
+          name: timezone
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       nodeSelector:
         rtlsdr-16200: "true"
       serviceAccount: "{{ _instance.metadata.name }}"
@@ -57,9 +98,14 @@ spec:
           path: "/dev/bus/usb"
           type: "Directory"
         name: "usb"
-      - emptyDir: {}
-        name: "scratch"
-      - emptyDir: {}
-        # persistentVolumeClaim:
-        #   claimName: "{{ _instance.metadata.name }}"
+      - hostPath:
+          path: /etc/localtime
+          type: File
+        name: localtime
+      - hostPath:
+          path: /etc/timezone
+          type: File
+        name: timezone
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
         name: "persistence"

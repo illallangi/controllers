@@ -14,7 +14,11 @@ spec:
     singular: ais
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.ais.webDomain
+      name: Domain
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         properties:
@@ -26,6 +30,162 @@ spec:
             type: object
           spec:
             properties:
+              ais:
+                properties:
+                  backup:
+                    properties:
+                      b2AccountId:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2AccountKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      b2repo:
+                        type: string
+                      resticPassword:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      schedule:
+                        default: 0 30 3 * * *
+                        type: string
+                    required:
+                    - resticPassword
+                    - b2AccountId
+                    - b2AccountKey
+                    - b2repo
+                    type: object
+                  position:
+                    properties:
+                      latitude:
+                        type: number
+                      longitude:
+                        type: number
+                    required:
+                    - latitude
+                    - longitude
+                    type: object
+                  shipXplorer:
+                    properties:
+                      serialNumber:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      sharingKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                    required:
+                    - serialNumber
+                    - sharingKey
+                    type: object
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
+                  title:
+                    default: AIS
+                    type: string
+                  udpFeeds:
+                    default: []
+                    items:
+                      properties:
+                        host:
+                          type: string
+                        port:
+                          default: 6555
+                          type: integer
+                      required:
+                      - host
+                      type: object
+                    type: array
+                  webDomain:
+                    type: string
+                required:
+                - position
+                - shipXplorer
+                - storage
+                - webDomain
+                type: object
               cloudflare:
                 properties:
                   apiToken:
@@ -47,25 +207,9 @@ spec:
                 required:
                 - apiToken
                 type: object
-              position:
-                properties:
-                  altitude:
-                    type: number
-                  latitude:
-                    type: number
-                  longitude:
-                    type: number
-                required:
-                - altitude
-                - latitude
-                - longitude
-                type: object
-              title:
-                default: AIS
-                type: string
             required:
+            - ais
             - cloudflare
-            - position
             type: object
         required:
         - apiVersion
