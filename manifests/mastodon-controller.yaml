@@ -14,7 +14,10 @@ spec:
     singular: mastodon
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.mastodon.webDomain
+      name: Domain
+      type: string
     schema:
       openAPIV3Schema:
         properties:
