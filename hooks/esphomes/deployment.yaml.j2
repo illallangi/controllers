@@ -106,6 +106,11 @@ spec:
       - persistentVolumeClaim:
           claimName: {{ _instance.metadata.name }}
         name: "persistence"
-      - configMap:
-          name: "{{ _instance.metadata.name }}-tailscale"
-        name: "tailscale"
+      - name: "tailscale"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: "Caddyfile"
+                path: "Caddyfile"
+              name: "{{ _instance.metadata.name }}-tailscale"
