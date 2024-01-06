@@ -8,7 +8,7 @@ kinds:
 apiVersion: "v1"
 data:
   Caddyfile: |-
-    {{ _instance.spec.esphome.webDomain }}:443 {
+    {{ _instance.spec.registry.webDomain }}:443 {
       tls webmaster@illallangi.enterprises {
         on_demand
       }
