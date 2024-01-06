@@ -32,7 +32,7 @@ spec:
         - name: UDP_FEEDS
           valueFrom:
             configMapKeyRef:
-              key: updFeeds
+              key: udpFeeds
               name: "{{ _instance.metadata.name }}"
         - name: RTLSDR_DEVICE_GAIN
           value: auto
