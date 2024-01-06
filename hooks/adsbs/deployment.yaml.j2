@@ -8,7 +8,7 @@ apiVersion: "apps/v1"
 kind: "Deployment"
 metadata: {{ _instance.metadata }}
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels: {{ _instance.selector }}
   strategy:
