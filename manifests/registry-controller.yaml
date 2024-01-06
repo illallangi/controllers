@@ -14,7 +14,10 @@ spec:
     singular: registry
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.tailscale.hostname
+      name: Hostname
+      type: string
     schema:
       openAPIV3Schema:
         properties:
