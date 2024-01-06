@@ -15,7 +15,7 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.tailscale.hostname
+    - jsonPath: .spec.rsync.webDomain
       name: Hostname
       type: string
     name: v1alpha1
@@ -41,8 +41,12 @@ spec:
                     required:
                     - name
                     type: object
+                  webDomain:
+                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
+                    type: string
                 required:
                 - data
+                - webDomain
                 type: object
               tailscale:
                 properties:
@@ -62,11 +66,8 @@ spec:
                         - name
                         type: object
                     type: object
-                  hostname:
-                    type: string
                 required:
                 - apiToken
-                - hostname
                 type: object
             required:
             - rsync

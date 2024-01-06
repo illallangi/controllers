@@ -38,6 +38,7 @@ spec:
         - mountPath: "/var/lib/registry"
           name: "persistence"
           subPath: "var/lib/registry"
+{% if _instance.spec.tailscale is defined %}
       - image: docker.io/library/caddy:2.6.4
         imagePullPolicy: IfNotPresent
         name: caddy
@@ -48,12 +49,11 @@ spec:
         - mountPath: "/var/run/tailscale"
           name: "persistence"
           subPath: "var/run/tailscale"
-{% if _instance.spec.tailscale is defined %}
       - env:
         - name: TS_KUBE_SECRET
           value: {{ _instance.metadata.name }}-tailscale
         - name: TS_EXTRA_ARGS
-          value: --hostname={{ _instance.spec.tailscale.hostname }}
+          value: --hostname={{ _instance.spec.registry.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
         image: ghcr.io/tailscale/tailscale:v1.56.1
