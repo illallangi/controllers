@@ -1,0 +1,17 @@
+#!/usr/local/bin/hook
+---
+component: postgresql
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Gatus
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _component.metadata }}
+spec:
+  ports:
+  - name: postgresql
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector: {{ _component.selector }}
