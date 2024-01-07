@@ -1,0 +1,89 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Gatus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: gatus
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        - name: TZ
+          value: Australia/Melbourne
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: hostname
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: username
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: database
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_PASS
+          valueFrom: {{ _instance.spec.postgresql.password }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: port
+              name: "{{ _instance.metadata.name }}-postgresql"
+        image: docker.io/twinproduction/gatus:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          tcpSocket:
+            port: http
+        name: gatus
+        ports:
+        - containerPort: 8080
+          name: http
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: http
+        volumeMounts:
+        - mountPath: /config/config.yaml
+          name: config
+          subPath: config.yaml
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-postgresql"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "init-postgresql"
+        resources: {}
+      serviceAccount: {{ _instance.metadata.name }}
+      serviceAccountName: {{ _instance.metadata.name }}
+      volumes:
+      - name: config
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: config.yaml
+                path: config.yaml
+              name: {{ _instance.metadata.name }}
