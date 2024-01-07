@@ -16,7 +16,7 @@ spec:
   versions:
   - additionalPrinterColumns:
     - jsonPath: .spec.registry.webDomain
-      name: Hostname
+      name: Domain
       type: string
     name: v1alpha1
     schema:

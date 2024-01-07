@@ -16,7 +16,7 @@ spec:
   versions:
   - additionalPrinterColumns:
     - jsonPath: .spec.rsync.webDomain
-      name: Hostname
+      name: Domain
       type: string
     name: v1alpha1
     schema:
