@@ -6,9 +6,9 @@ kinds:
 ---
 apiVersion: "v1"
 data:
-  PGID: "1061"
-  PUID: "1061"
-  TZ: "Australia/Melbourne"
+  uid: "{{ _instance.spec.uid }}"
+  gid: "{{ _instance.spec.gid }}"
+  timezone: "Australia/Melbourne"
   emptyfile: ""
   oneshot: "oneshot"
   up: '/etc/s6-overlay/s6-rc.d/init-mod-homeassistant-k8s-config/run'
@@ -82,6 +82,10 @@ data:
             config["http"] = {}
         config["http"]["use_x_forwarded_for"] = True
         config["http"]["trusted_proxies"] = ["100.0.0.0/8", "127.0.0.1", "10.0.0.0/8"]
+
+        if "recorder" not in config:
+            config["recorder"] = {}
+        config["recorder"]["db_url"] = f"postgresql://{os.environ['DB_USER']}:{os.environ['DB_PASS']}@{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
 
         yaml.dump(config, sys.stdout, Dumper=get_dumper())
 
