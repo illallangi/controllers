@@ -20,9 +20,46 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - envFrom:
-        - configMapRef:
-            name: "{{ _instance.metadata.name }}"
+      - env"
+# General configuration
+        - name: PUID
+          valueFrom:
+            configMapKeyRef:
+              key: uid
+              name: "{{ _instance.metadata.name }}"
+        - name: PGID
+          valueFrom:
+            configMapKeyRef:
+              key: gid
+              name: "{{ _instance.metadata.name }}"
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              key: timezone
+              name: "{{ _instance.metadata.name }}"
+# PostgreSQL Configuration
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: hostname
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: username
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: database
+              name: "{{ _instance.metadata.name }}-postgresql"
+        - name: DB_PASS
+          valueFrom: {{ _instance.spec.postgresql.password }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: port
+              name: "{{ _instance.metadata.name }}-postgresql"
         image: "lscr.io/linuxserver/homeassistant:2023.10.3-ls193"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
@@ -103,6 +140,15 @@ spec:
           - name: ndots
             value: "1"
       hostNetwork: true
+      initContainers:
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-postgresql"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "init-postgresql"
+        resources: {}
       serviceAccount: "{{ _instance.metadata.name }}"
       serviceAccountName: "{{ _instance.metadata.name }}"
       volumes:

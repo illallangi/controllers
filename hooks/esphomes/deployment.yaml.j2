@@ -20,7 +20,10 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - image: ghcr.io/esphome/esphome:2023.12.5
+      - env:
+        - name: ESPHOME_DASHBOARD_USE_PING
+          value: "true"
+        image: ghcr.io/esphome/esphome:2023.12.5
         imagePullPolicy: IfNotPresent
         livenessProbe:
           tcpSocket:
