@@ -38,6 +38,9 @@ spec:
         - mountPath: /config
           name: persistence
           subPath: config
+        - mountPath: /cache
+          name: scratch
+          subPath: cache
 {% if _instance.spec.tailscale is defined %}
       - image: docker.io/library/caddy:2.6.4
         imagePullPolicy: IfNotPresent
@@ -116,3 +119,5 @@ spec:
               - key: "Caddyfile"
                 path: "Caddyfile"
               name: "{{ _instance.metadata.name }}-tailscale"
+      - emptyDir: {}
+        name: scratch
