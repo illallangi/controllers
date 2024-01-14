@@ -146,6 +146,27 @@ spec:
                     required:
                     - sharingKey
                     type: object
+                  planeWatch:
+                    properties:
+                      apiKey:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                    required:
+                    - apiKey
+                    type: object
                   position:
                     properties:
                       altitude:
