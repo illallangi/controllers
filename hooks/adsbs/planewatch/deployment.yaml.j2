@@ -1,0 +1,64 @@
+#!/usr/local/bin/hook
+---
+component: planewatch
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: ADSB
+---
+{% if _component.spec.adsb.planeWatch is defined %}
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _component.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _component.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: planewatch
+      labels: {{ _component.selector }}
+    spec:
+      containers:
+      - env:
+        - name: "TZ"
+          value: "Australia/Melbourne"
+        - name: "BEASTHOST"
+          value: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
+        - name: "APIKEY"
+          valueFrom: {{ _component.spec.adsb.planeWatch.apiKey }}
+        - name: "LAT"
+          valueFrom:
+            configMapKeyRef:
+              key: "latitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "LON"
+          valueFrom:
+            configMapKeyRef:
+              key: "longitude"
+              name: "{{ _instance.metadata.name }}"
+        - name: "ALT"
+          valueFrom:
+            configMapKeyRef:
+              key: "altitude"
+              name: "{{ _instance.metadata.name }}"
+        image: "ghcr.io/plane-watch/docker-plane-watch:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "planewatch"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/var/log"
+          name: "scratch"
+          subPath: "var/log"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - emptyDir: {}
+        name: "scratch"
+{% endif %}
