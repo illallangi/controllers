@@ -27,14 +27,14 @@ spec:
           value: "Australia/Melbourne"
         - name: "BEASTHOST"
           value: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
-        - name: "APIKEY"
+        - name: "API_KEY"
           valueFrom: {{ _component.spec.adsb.planeWatch.apiKey }}
         - name: "LAT"
           valueFrom:
             configMapKeyRef:
               key: "latitude"
               name: "{{ _instance.metadata.name }}"
-        - name: "LON"
+        - name: "LONG"
           valueFrom:
             configMapKeyRef:
               key: "longitude"
