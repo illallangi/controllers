@@ -60,7 +60,7 @@ spec:
             configMapKeyRef:
               key: port
               name: "{{ _instance.metadata.name }}-postgresql"
-        image: "lscr.io/linuxserver/homeassistant:2023.10.3-ls193"
+        image: {{ 'IMAGE_HOMEASSISTANT' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           tcpSocket:
@@ -127,7 +127,7 @@ spec:
             valueFrom: {{ _component.spec.homeassistant.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.homeassistant.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
@@ -146,7 +146,7 @@ spec:
         - "service"
         - "{{ _instance.metadata.name }}-postgresql"
         - "--namespace {{ _instance.metadata.namespace }}"
-        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init-postgresql"
         resources: {}

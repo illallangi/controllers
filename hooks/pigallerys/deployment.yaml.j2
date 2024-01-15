@@ -23,7 +23,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: "{{ _instance.metadata.name }}"
-        image: docker.io/bpatrik/pigallery2:latest
+        image: {{ 'IMAGE_PIGALLERY' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -73,7 +73,7 @@ spec:
             valueFrom: {{ _component.spec.pigallery.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.pigallery.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

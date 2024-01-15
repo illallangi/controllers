@@ -23,7 +23,7 @@ spec:
       - env:
         - name: SERVER_URL
           value: "https://{{ _instance.spec.podfetch.webDomain }}/"
-        image: ghcr.io/samtv12345/podfetch:latest
+        image: {{ 'IMAGE_PODFETCH' | getenv }}
         imagePullPolicy: "Always"
         livenessProbe:
           httpGet:
@@ -67,7 +67,7 @@ spec:
             valueFrom: {{ _component.spec.podfetch.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.podfetch.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

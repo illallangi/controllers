@@ -30,7 +30,7 @@ spec:
             configMapKeyRef:
               key: "timezone"
               name: "{{ _instance.metadata.name }}"
-        image: "ghcr.io/sdr-enthusiasts/docker-planefence:latest"
+        image: {{ 'IMAGE_PLANEFENCE' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "fence"
         resources: {}
@@ -89,7 +89,7 @@ spec:
           value: "{{ _instance.spec.adsb.fence.mastodon.server }}"
         - name: "MASTODON_ACCESS_TOKEN"
           valueFrom: {{ _instance.spec.adsb.fence.mastodon.accessToken }}
-        image: "ghcr.io/illallangi/init-jinja:v0.0.2"
+        image: {{ 'IMAGE_INITJINJA' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init-jinja"
         resources: {}
@@ -116,7 +116,7 @@ spec:
           value: "{{ _instance.spec.adsb.fence.mastodon.server }}"
         - name: "MASTODON_ACCESS_TOKEN"
           valueFrom: {{ _instance.spec.adsb.fence.mastodon.accessToken }}
-        image: "ghcr.io/illallangi/toolbx:latest"
+        image: {{ 'IMAGE_TOOLBOX' | getenv }}
         name: "init-toot"
       serviceAccount: "{{ _instance.metadata.name }}"
       serviceAccountName: "{{ _instance.metadata.name }}"
