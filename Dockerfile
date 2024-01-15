@@ -89,7 +89,31 @@ RUN \
 COPY --from=shell-operator /rootfs /
 
 # Set environment variables
-ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+ENV \
+  S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
+  IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
+  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.2 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.6 \
+  IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:latest \
+  IMAGE_GATUS=docker.io/twinproduction/gatus:latest \
+  IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.1.3-ls221 \
+  IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.2 \
+  IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
+  IMAGE_MASTODON=lscr.io/linuxserver/mastodon:v4.2.3-ls65 \
+  IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
+  IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
+  IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
+  IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
+  IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
+  IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
+  IMAGE_REDIS=docker.io/library/redis:7.2.3 \
+  IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
+  IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
+  IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
+  IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
+  IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \
+  IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
+  IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
 
 # Set command
 CMD ["/init"]

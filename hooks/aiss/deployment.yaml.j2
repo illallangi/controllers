@@ -59,7 +59,7 @@ spec:
               name: "{{ _instance.metadata.name }}"
         - name: PROMETHEUS_ENABLE
           value: "false"
-        image: "ghcr.io/sdr-enthusiasts/shipxplorer:latest"
+        image: {{ 'IMAGE_SHIPXPLORER' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           tcpSocket:

@@ -20,7 +20,7 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - image: ghcr.io/akhilrex/podgrab:1.0.0
+      - image: {{ 'IMAGE_PODGRAB' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -64,7 +64,7 @@ spec:
             valueFrom: {{ _component.spec.podgrab.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.podgrab.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

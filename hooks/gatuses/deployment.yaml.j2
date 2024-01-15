@@ -45,7 +45,7 @@ spec:
             configMapKeyRef:
               key: port
               name: "{{ _instance.metadata.name }}-postgresql"
-        image: docker.io/twinproduction/gatus:latest
+        image: {{ 'IMAGE_GATUS' | getenv }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
           tcpSocket:
@@ -72,7 +72,7 @@ spec:
         - "service"
         - "{{ _instance.metadata.name }}-postgresql"
         - "--namespace {{ _instance.metadata.namespace }}"
-        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init-postgresql"
         resources: {}

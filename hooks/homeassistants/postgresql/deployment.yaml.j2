@@ -34,7 +34,7 @@ spec:
             configMapKeyRef:
               key: database
               name: "{{ _component.metadata.name }}"
-        image: docker.io/library/postgres:16.1
+        image: {{ 'IMAGE_POSTGRES' | getenv }}
         imagePullPolicy: "IfNotPresent"
         lifecycle:
           preStop:
@@ -86,7 +86,7 @@ spec:
             valueFrom: {{ _component.spec.postgresql.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.postgresql.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

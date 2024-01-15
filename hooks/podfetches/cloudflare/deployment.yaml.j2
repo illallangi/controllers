@@ -29,7 +29,7 @@ spec:
           value: "http2"
         - name: "TUNNEL_TOKEN"
           valueFrom: {{ _component.spec.cloudflare.apiToken }}
-        image: "ghcr.io/erisa/cloudflared:2023.8.0"
+        image: {{ 'IMAGE_CLOUDFLARED' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "cloudflare"
         resources: {}
@@ -38,7 +38,7 @@ spec:
         - "service"
         - "{{ _instance.metadata.name }}"
         - "--namespace {{ _instance.metadata.namespace }}"
-        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init"
         resources: {}
