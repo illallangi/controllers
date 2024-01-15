@@ -23,5 +23,7 @@ setuptools.setup(
         "click",
         "python-frontmatter",
         "Jinja2",
+        "jinja2-ansible-filters",
+        "jinja2-getenv-extension",
     ],
 )
