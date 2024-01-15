@@ -44,7 +44,7 @@ spec:
             configMapKeyRef:
               key: "altitude"
               name: "{{ _instance.metadata.name }}"
-        image: "ghcr.io/plane-watch/docker-plane-watch:latest"
+        image: {{ 'IMAGE_PLANEWATCH' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "planewatch"
         resources: {}

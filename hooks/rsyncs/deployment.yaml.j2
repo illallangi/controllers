@@ -25,7 +25,7 @@ spec:
         #   value: "data:data"
         - name: "RSYNC_VOLUME_CONFIG_{{ _instance.metadata.name | upper | replace("-", "_") }}"
           value: "[{{ _instance.metadata.name | lower | replace("-", "_") }}]; path = /data; comment = {{ _instance.metadata.name | replace("-", " ") }}; read only = no"
-        image: "ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7"
+        image: {{ 'IMAGE_RSYNC' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           tcpSocket:
@@ -51,7 +51,7 @@ spec:
           value: --hostname={{ _instance.spec.rsync.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
-        image: ghcr.io/tailscale/tailscale:v1.56.1
+        image: {{ 'IMAGE_TAILSCALE' | getenv }}
         imagePullPolicy: IfNotPresent
         name: tailscale
         resources: {}

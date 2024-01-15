@@ -20,7 +20,7 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - image: docker.io/library/registry:2.8.3
+      - image: {{ 'IMAGE_REGISTRY' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -39,7 +39,7 @@ spec:
           name: "persistence"
           subPath: "var/lib/registry"
 {% if _instance.spec.tailscale is defined %}
-      - image: docker.io/library/caddy:2.6.4
+      - image: {{ 'IMAGE_CADDY' | getenv }}
         imagePullPolicy: IfNotPresent
         name: caddy
         volumeMounts:
@@ -56,7 +56,7 @@ spec:
           value: --hostname={{ _instance.spec.registry.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
-        image: ghcr.io/tailscale/tailscale:v1.56.1
+        image: {{ 'IMAGE_TAILSCALE' | getenv }}
         imagePullPolicy: IfNotPresent
         name: tailscale
         resources: {}
@@ -88,7 +88,7 @@ spec:
             valueFrom: {{ _component.spec.registry.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.registry.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

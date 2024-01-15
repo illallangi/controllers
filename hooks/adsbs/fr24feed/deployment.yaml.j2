@@ -27,7 +27,7 @@ spec:
           valueFrom: {{ _component.spec.adsb.fr24feed.sharingKey }}
         - name: "BEASTHOST"
           value: "{{ _instance.metadata.name }}.{{ _instance.metadata.namespace }}.svc.cluster.local"
-        image: "ghcr.io/sdr-enthusiasts/docker-flightradar24:latest"
+        image: {{ 'IMAGE_FLIGHTRADAR24' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "fr24feed"
         resources: {}

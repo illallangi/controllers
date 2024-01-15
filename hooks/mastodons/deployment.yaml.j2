@@ -120,7 +120,7 @@ spec:
           valueFrom: {{ _instance.spec.mastodon.vapidPrivateKey }}
         - name: "VAPID_PUBLIC_KEY"
           valueFrom: {{ _instance.spec.mastodon.vapidPublicKey }}
-        image: lscr.io/linuxserver/mastodon:v4.2.3-ls65
+        image: {{ 'IMAGE_MASTODON' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -171,7 +171,7 @@ spec:
             valueFrom: {{ _component.spec.mastodon.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.mastodon.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
@@ -188,7 +188,7 @@ spec:
         - "service"
         - "{{ _instance.metadata.name }}-postgresql"
         - "--namespace {{ _instance.metadata.namespace }}"
-        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init-postgresql"
         resources: {}
@@ -196,7 +196,7 @@ spec:
         - "service"
         - "{{ _instance.metadata.name }}-redis"
         - "--namespace {{ _instance.metadata.namespace }}"
-        image: "ghcr.io/groundnuty/k8s-wait-for:v2.0"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "init-redis"
         resources: {}

@@ -91,7 +91,7 @@ spec:
         # GRAPHS1090 (Decoder and System Status Web Page) parameters:
         - name: "GRAPHS1090_DARKMODE"
           value: "true"
-        image: "ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest"
+        image: {{ 'IMAGE_ULTRAFEEDER' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           tcpSocket:
@@ -154,7 +154,7 @@ spec:
             valueFrom: {{ _component.spec.adsb.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.adsb.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:

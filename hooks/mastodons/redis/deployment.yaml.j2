@@ -28,7 +28,7 @@ spec:
         - "1"
         - "--loglevel"
         - "warning"
-        image: docker.io/library/redis:7.2.3
+        image: {{ 'IMAGE_REDIS' | getenv }}
         imagePullPolicy: "IfNotPresent"
         lifecycle:
           preStop:
@@ -78,7 +78,7 @@ spec:
             valueFrom: {{ _component.spec.redis.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.redis.backup.b2AccountKey }}
-        image: docker.io/mazzolino/restic:1.7.1
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
