@@ -265,7 +265,13 @@ def dotemplate(
                 indent=2
             )
 
-    jinja_result = jinja2.Template(template,extensions=['jinja2_ansible_filters.AnsibleCoreFiltersExtension']).render(
+    jinja_result = jinja2.Template(
+        template,
+        extensions=[
+            "jinja2_ansible_filters.AnsibleCoreFiltersExtension",
+            "jinja2_getenv_extension.GetenvExtension",
+        ],
+    ).render(
         _options=options,
         _object=_object,
         _component=_component,
