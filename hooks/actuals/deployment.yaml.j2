@@ -1,0 +1,81 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Actual
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: actual
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - image: {{ 'IMAGE_ACTUAL' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            port: http
+        name: "actual"
+        ports:
+        - containerPort: 8080
+          name: http
+        resources: {}
+        startupProbe:
+          httpGet:
+            port: http
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/data"
+          name: "persistence"
+          subPath: "data"
+{% if _component.spec.actual is defined
+   and _component.spec.actual.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.actual.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /data
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag actual
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.actual.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.actual.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.actual.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.actual.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/data"
+          name: "persistence"
+          subPath: "data"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
