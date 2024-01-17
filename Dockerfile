@@ -93,7 +93,7 @@ ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
   IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.2 \
-  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.6 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.7 \
   IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:latest \
   IMAGE_GATUS=docker.io/twinproduction/gatus:latest \
   IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.1.3-ls221 \
