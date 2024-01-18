@@ -91,6 +91,7 @@ COPY --from=shell-operator /rootfs /
 # Set environment variables
 ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
+  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.1.0 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
   IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.2 \
   IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.7 \
