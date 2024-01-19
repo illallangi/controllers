@@ -67,6 +67,35 @@ spec:
         - mountPath: /tmp
           name: persistence
           subPath: var/run/tailscale
+      - args:
+        - -n
+        - -r
+        - -u
+        - esphome;Letmein123
+        - -s
+        - config;/config;no;no;no;esphome
+        env:
+        - name: USERID
+          value: "0"
+        - name: GROUPID
+          value: "0"
+        image: docker.io/dperson/samba:latest
+        imagePullPolicy: IfNotPresent
+        name: samba
+        ports:
+        - containerPort: 139
+          name: netbios-ssn
+          protocol: TCP
+        - containerPort: 445
+          name: microsoft-ds
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /config
+          name: persistence
+          subPath: config
 {% endif %}
 {% if _component.spec.esphome is defined
    and _component.spec.esphome.backup is defined %}
