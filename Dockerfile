@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240110
+FROM docker.io/library/debian:bookworm-20240130
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
@@ -93,21 +93,21 @@ ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
   IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.1.0 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
-  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.2 \
-  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.7 \
-  IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:latest \
+  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.5 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.1.5 \
+  IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.46-1_nohealthcheck \
   IMAGE_GATUS=docker.io/twinproduction/gatus:latest \
-  IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.1.3-ls221 \
-  IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.2 \
+  IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.1.6-ls227 \
+  IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
-  IMAGE_MASTODON=lscr.io/linuxserver/mastodon:v4.2.3-ls65 \
+  IMAGE_MASTODON=lscr.io/linuxserver/mastodon:v4.2.5-ls73 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
-  IMAGE_REDIS=docker.io/library/redis:7.2.3 \
+  IMAGE_REDIS=docker.io/library/redis:7.2.4 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
