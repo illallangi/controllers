@@ -1,0 +1,18 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: InfluxDB
+---
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "Role"
+metadata: {{ _component.metadata }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - "pods"
+  - "services"
+  verbs:
+  - "get"
+  - "list"
