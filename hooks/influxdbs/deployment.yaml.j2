@@ -1,0 +1,79 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: InfluxDB
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _component.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _component.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: influxdb
+      labels: {{ _component.selector }}
+    spec:
+      containers:
+      - image: {{ 'IMAGE_INFLUXDB' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            path: "/ping"
+            port: influxdb
+        name: "influxdb"
+        ports:
+        - containerPort: 8086
+          name: influxdb
+        resources: {}
+        startupProbe:
+          httpGet:
+            path: "/ping"
+            port: influxdb
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/var/lib/influxdb"
+          name: "persistence"
+          subPath: "var/lib/influxdb"
+{% if _component.spec.influxdb is defined
+   and _component.spec.influxdb.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.influxdb.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /var/lib/influxdb
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag influxdb
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.influxdb.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.influxdb.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.influxdb.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.influxdb.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: /var/lib/influxdb
+          name: persistence
+          subPath: var/lib/influxdb
+{% endif %}
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _component.metadata.name }}"
+        name: "persistence"
