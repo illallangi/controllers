@@ -1,0 +1,16 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: InfluxDB
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _component.metadata }}
+spec:
+  ports:
+  - name: influxdb
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector: {{ _component.selector }}

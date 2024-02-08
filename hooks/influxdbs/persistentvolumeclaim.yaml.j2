@@ -1,0 +1,20 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: HomeAssistant
+operation: "CreateIfNotExists"
+---
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  labels: {{ _component.metadata.labels }}
+  name: "{{ _component.metadata.name }}"
+  namespace: "{{ _component.metadata.namespace }}"
+spec:
+  accessModes:
+  - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "{{ _component.spec.influxdb.storage.resources.requests.storage }}"
+  storageClassName: "{{ _component.spec.influxdb.storage.storageClassName }}"

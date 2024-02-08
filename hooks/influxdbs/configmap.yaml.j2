@@ -1,0 +1,14 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: InfluxDB
+---
+apiVersion: "v1"
+data:
+  database: "{{ _component.kind | lower }}"
+  hostname: "{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local"
+  port: "8086"
+  username: "{{ _component.kind | lower }}"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
