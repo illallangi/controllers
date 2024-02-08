@@ -30,7 +30,7 @@ spec:
             type: object
           spec:
             properties:
-              infludb:
+              influxdb:
                 properties:
                   backup:
                     properties:
