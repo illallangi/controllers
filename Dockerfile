@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240130
+FROM docker.io/library/debian:bookworm-20240211
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
@@ -94,6 +94,7 @@ ENV \
   IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.1.0 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
   IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.5 \
+  IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1-r8-ls254 \
   IMAGE_ESPHOME=ghcr.io/esphome/esphome:2023.12.9 \
   IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.46-1_nohealthcheck \
   IMAGE_GATUS=docker.io/twinproduction/gatus:latest \

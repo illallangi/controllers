@@ -1,0 +1,216 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Deluge
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: deluge
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        - name: "PUID"
+          value: "1061"
+        - name: "PGID"
+          value: "1061"
+        - name: "TZ"
+          value: "Australia/Melbourne"
+        image: {{ 'IMAGE_DELUGE' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          tcpSocket:
+            port: "rpc"
+        name: "deluge"
+        ports:
+        - containerPort: 8112
+          name: rpc
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          tcpSocket:
+            port: rpc
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+        - mountPath: "/data"
+          name: "data"
+          subPath: "{{ _instance.spec.deluge.data.subPath | default("") }}"
+        - mountPath: "/etc/s6-overlay/s6-rc.d/init-deluge-config/run"
+          name: "config"
+          subPath: "init-deluge-config-run"
+{% if _instance.spec.tailscale is defined %}
+      - args:
+        - -n
+        - -r
+        - -u
+        - deluge;Letmein123
+        - -s
+        - data;/data;no;no;no;deluge
+        env:
+        - name: USERID
+          value: "1061"
+        - name: GROUPID
+          value: "1061"
+        image: docker.io/dperson/samba:latest
+        imagePullPolicy: IfNotPresent
+        name: samba
+        ports:
+        - containerPort: 139
+          name: netbios-ssn
+          protocol: TCP
+        - containerPort: 445
+          name: microsoft-ds
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: "/data"
+          name: "data"
+          subPath: "{{ _instance.spec.deluge.data.subPath | default("") }}"
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.deluge.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: {{ 'IMAGE_TAILSCALE' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+{% endif %}
+{% if _component.spec.deluge is defined 
+   and _component.spec.deluge.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.deluge.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /config
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag deluge
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.deluge.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.deluge.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.deluge.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.deluge.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - --extension=jinja2_ansible_filters.AnsibleCoreFiltersExtension
+        - --extension=jinja2_getenv_extension.GetenvExtension
+        - --strict
+        - --outfile=/output/auth
+        - /input/auth.j2
+        env:
+        - name: "DELUGE_USERNAME"
+          value: "deluge"
+        - name: "DELUGE_PASSWORD"
+          value: "Letmein123"
+        image: {{ 'IMAGE_INITJINJA' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-jinja-auth"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/output"
+          name: "persistence"
+          subPath: "config"
+        - mountPath: "/input"
+          name: "config"
+      - args:
+        - --extension=jinja2_ansible_filters.AnsibleCoreFiltersExtension
+        - --extension=jinja2_getenv_extension.GetenvExtension
+        - --strict
+        - --outfile=/output/autoadd.conf
+        - /input/autoadd.conf.j2
+        env:
+        - name: "DELUGE_USERNAME"
+          value: "deluge"
+        - name: "DELUGE_PASSWORD"
+          value: "Letmein123"
+        image: {{ 'IMAGE_INITJINJA' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-jinja-autoadd-conf"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/output"
+          name: "persistence"
+          subPath: "config"
+        - mountPath: "/input"
+          name: "config"
+      - args:
+        - --extension=jinja2_ansible_filters.AnsibleCoreFiltersExtension
+        - --extension=jinja2_getenv_extension.GetenvExtension
+        - --strict
+        - --outfile=/output/core.conf
+        - /input/core.conf.j2
+        env:
+        - name: "DELUGE_USERNAME"
+          value: "deluge"
+        - name: "DELUGE_PASSWORD"
+          value: "Letmein123"
+        image: {{ 'IMAGE_INITJINJA' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-jinja-core-conf"
+        resources: {}
+        volumeMounts:
+        - mountPath: "/output"
+          name: "persistence"
+          subPath: "config"
+        - mountPath: "/input"
+          name: "config"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.spec.deluge.data.name }}"
+        name: "data"
+      - name: "config"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: "auth.j2"
+                path: "auth.j2"
+              - key: "autoadd.conf.j2"
+                path: "autoadd.conf.j2"
+              - key: "core.conf.j2"
+                path: "core.conf.j2"
+              - key: "init-deluge-config-run"
+                mode: 493
+                path: "init-deluge-config-run"
+              name: "{{ _component.metadata.name }}"
