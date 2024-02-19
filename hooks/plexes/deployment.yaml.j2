@@ -43,7 +43,7 @@ spec:
           subPath: "config"
 {%- for data in _component.spec.plex.data %}
         - mountPath: "/data/{{ data.name }}"
-          name: "persistence"
+          name: "{{ data.name }}"
           readOnly: true
           subPath: "{{ data.subPath}}"
 {%- endfor %}
