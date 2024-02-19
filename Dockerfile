@@ -105,6 +105,7 @@ ENV \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
+  IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.0 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
