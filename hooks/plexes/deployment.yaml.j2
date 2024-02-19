@@ -26,16 +26,16 @@ spec:
         image: {{ 'IMAGE_PLEX' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
-          httpGet:
-            port: http
+          tcpSocket:
+            port: plex
         name: plex
         ports:
-        - containerPort: 80
-          name: http
+        - containerPort: 32400
+          name: plex
         resources: {}
         startupProbe:
-          httpGet:
-            port: http
+          tcpSocket:
+            port: plex
           failureThreshold: 30
         volumeMounts:
         - mountPath: "/config"
