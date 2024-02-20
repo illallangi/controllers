@@ -1,0 +1,13 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Radarr
+---
+apiVersion: "v1"
+data:
+  PUID: "1061"
+  PGID: "1061"
+  TZ: "Australia/Melbourne"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}
