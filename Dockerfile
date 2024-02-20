@@ -105,9 +105,11 @@ ENV \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
+  IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.0 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
+  IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.3.6.8612-ls204 \
   IMAGE_REDIS=docker.io/library/redis:7.2.4 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
