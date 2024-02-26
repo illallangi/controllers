@@ -120,7 +120,8 @@ ENV \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
-  IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18
+  IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18 \
+  IMAGE_WORDPRESS=docker.io/library/wordpress:6.4.1-apache
 
 # Set command
 CMD ["/init"]

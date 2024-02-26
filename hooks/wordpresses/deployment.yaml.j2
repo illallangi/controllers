@@ -1,0 +1,139 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: WordPress
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: wordpress
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        - name: PUID
+          valueFrom:
+            configMapKeyRef:
+              key: uid
+              name: "{{ _instance.metadata.name }}"
+        - name: PGID
+          valueFrom:
+            configMapKeyRef:
+              key: gid
+              name: "{{ _instance.metadata.name }}"
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              key: tz
+              name: "{{ _instance.metadata.name }}"
+        - name: WORDPRESS_TABLE_PREFIX
+          value: wt_
+        - name: WORDPRESS_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: hostname
+              name: "{{ _instance.metadata.name }}-mariadb"
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: username
+              name: "{{ _instance.metadata.name }}-mariadb"
+        - name: WORDPRESS_DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: database
+              name: "{{ _instance.metadata.name }}-mariadb"
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom: {{ _instance.spec.mariadb.password }}
+        image: {{ 'IMAGE_WORDPRESS' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            path: "/"
+            port: http
+        name: "wordpress"
+        ports:
+        - containerPort: 80
+          name: http
+        resources: {}
+        startupProbe:
+          httpGet:
+            path: "/"
+            port: http
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/usr/local/etc/php/conf.d/custom.ini"
+          name: "config"
+          subPath: "custom.ini"
+        - mountPath: "/var/www/html/wp-content"
+          name: "persistence"
+          subPath: "var/www/html/wp-content"
+{% if _component.spec.wordpress is defined
+   and _component.spec.wordpress.backup is defined %}
+      - env:
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.wordpress.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /var/www/html/wp-content
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag wordpress
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.wordpress.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.wordpress.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.wordpress.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.wordpress.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/var/www/html/wp-content"
+          name: "persistence"
+          subPath: "var/www/html/wp-content"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-mariadb"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-mariadb"
+        resources: {}
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - name: "config"
+        projected:
+          defaultMode: 493
+          sources:
+          - configMap:
+              items:
+              - key: "custom.ini"
+                path: "custom.ini"
+              name: "{{ _instance.metadata.name }}"
