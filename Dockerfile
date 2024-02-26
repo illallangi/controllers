@@ -101,6 +101,7 @@ ENV \
   IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.1.6-ls227 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
+  IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
   IMAGE_MASTODON=lscr.io/linuxserver/mastodon:v4.2.5-ls73 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
@@ -118,7 +119,8 @@ ENV \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.1.929-ls226 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
-  IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
+  IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
+  IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18
 
 # Set command
 CMD ["/init"]
