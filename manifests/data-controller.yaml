@@ -3,7 +3,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/name: data-operator
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: data
   name: datas.illallangi.enterprises
 spec:
   group: illallangi.enterprises
@@ -145,7 +146,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/name: data-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: data
   name: data-controller
   namespace: kube-system
 ---
@@ -153,7 +155,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: data-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: data
   name: data-controller
 rules:
 - apiGroups:
@@ -207,7 +210,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: data-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: data
   name: data-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -222,14 +226,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: data-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: data
   name: data-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: data-controller
+      app.kubernetes.io/name: controller
+      app.kubernetes.io/instance: data
   strategy:
     type: Recreate
   template:
@@ -237,7 +243,8 @@ spec:
       annotations:
         kubectl.kubernetes.io/default-container: data-controller
       labels:
-        app.kubernetes.io/name: data-controller
+        app.kubernetes.io/name: controller
+        app.kubernetes.io/instance: data
     spec:
       containers:
       - image: ghcr.io/illallangi/data-controller:latest

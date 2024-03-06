@@ -3,7 +3,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/name: podfetch-operator
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: podfetch
   name: podfetches.illallangi.enterprises
 spec:
   group: illallangi.enterprises
@@ -168,7 +169,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/name: podfetch-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: podfetch
   name: podfetch-controller
   namespace: kube-system
 ---
@@ -176,7 +178,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: podfetch-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: podfetch
   name: podfetch-controller
 rules:
 - apiGroups:
@@ -230,7 +233,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: podfetch-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: podfetch
   name: podfetch-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -245,14 +249,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: podfetch-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: podfetch
   name: podfetch-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: podfetch-controller
+      app.kubernetes.io/name: controller
+      app.kubernetes.io/instance: podfetch
   strategy:
     type: Recreate
   template:
@@ -260,7 +266,8 @@ spec:
       annotations:
         kubectl.kubernetes.io/default-container: podfetch-controller
       labels:
-        app.kubernetes.io/name: podfetch-controller
+        app.kubernetes.io/name: controller
+        app.kubernetes.io/instance: podfetch
     spec:
       containers:
       - image: ghcr.io/illallangi/podfetch-controller:latest

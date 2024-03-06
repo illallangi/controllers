@@ -3,7 +3,8 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/name: radarr-operator
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: radarr
   name: radarrs.illallangi.enterprises
 spec:
   group: illallangi.enterprises
@@ -169,7 +170,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/name: radarr-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: radarr
   name: radarr-controller
   namespace: kube-system
 ---
@@ -177,7 +179,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: radarr-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: radarr
   name: radarr-controller
 rules:
 - apiGroups:
@@ -232,7 +235,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: radarr-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: radarr
   name: radarr-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -247,14 +251,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: radarr-controller
+    app.kubernetes.io/name: controller
+    app.kubernetes.io/instance: radarr
   name: radarr-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: radarr-controller
+      app.kubernetes.io/name: controller
+      app.kubernetes.io/instance: radarr
   strategy:
     type: Recreate
   template:
@@ -262,7 +268,8 @@ spec:
       annotations:
         kubectl.kubernetes.io/default-container: radarr-controller
       labels:
-        app.kubernetes.io/name: radarr-controller
+        app.kubernetes.io/name: controller
+        app.kubernetes.io/instance: radarr
     spec:
       containers:
       - image: ghcr.io/illallangi/radarr-controller:latest
