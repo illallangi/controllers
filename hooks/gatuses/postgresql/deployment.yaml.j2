@@ -66,6 +66,8 @@ spec:
 {% if _component.spec.postgresql is defined
    and _component.spec.postgresql.backup is defined %}
       - env:
+          - name: PRE_COMMANDS
+            value: restic unlock --remove-all
           - name: "RUN_ON_STARTUP"
             value: "true"
           - name: "BACKUP_CRON"
