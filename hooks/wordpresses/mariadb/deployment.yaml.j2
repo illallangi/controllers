@@ -82,23 +82,23 @@ spec:
    and _component.spec.mariadb.backup is defined %}
       - env:
           - name: PRE_COMMANDS
-            value:  unlock --remove-all
+            value: restic unlock --remove-all
           - name: "RUN_ON_STARTUP"
             value: "true"
           - name: "BACKUP_CRON"
             value: "{{ _component.spec.mariadb.backup.schedule }}"
-          - name: "_BACKUP_SOURCES"
+          - name: "RESTIC_BACKUP_SOURCES"
             value: /var/lib/mysql
-          - name: "_BACKUP_ARGS"
+          - name: "RESTIC_BACKUP_ARGS"
             value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag mariadb
-          - name: "_FORGET_ARGS"
+          - name: "RESTIC_FORGET_ARGS"
             value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
-          - name: "_REPOSITORY"
+          - name: "RESTIC_REPOSITORY"
             value: "{{ _component.spec.mariadb.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
           - name: "TZ"
             value: "Australia/Melbourne"
-          - name: "_PASSWORD"
-            valueFrom: {{ _component.spec.mariadb.backup.Password }}
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.mariadb.backup.resticPassword }}
           - name: "B2_ACCOUNT_ID"
             valueFrom: {{ _component.spec.mariadb.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
