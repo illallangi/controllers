@@ -1,0 +1,15 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Plex
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _instance.metadata }}
+spec:
+  ports:
+  - name: plex
+    port: 32400
+    targetPort: plex
+  selector: {{ _instance.selector }}

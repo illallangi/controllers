@@ -43,6 +43,8 @@ spec:
 {% if _component.spec.influxdb is defined
    and _component.spec.influxdb.backup is defined %}
       - env:
+          - name: PRE_COMMANDS
+            value: restic unlock --remove-all
           - name: "RUN_ON_STARTUP"
             value: "true"
           - name: "BACKUP_CRON"

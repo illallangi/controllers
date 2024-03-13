@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240211
+FROM docker.io/library/debian:bookworm-20240311
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
@@ -115,6 +115,8 @@ ENV \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
+  IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.0.2 \
+  IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.0.1 \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.1.929-ls226 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \

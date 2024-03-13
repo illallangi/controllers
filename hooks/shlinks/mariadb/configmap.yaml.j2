@@ -1,0 +1,19 @@
+#!/usr/local/bin/hook
+---
+component: mariadb
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Shlink
+---
+apiVersion: "v1"
+data:
+  auto_upgrade: "upgrade"
+  database: "{{ _component.kind | lower }}"
+  hostname: "{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local"
+  initdb_skip_tzinfo: "skip"
+  mysql_localhost_user: "create"
+  port: "3306"
+  random_root_password: "generate"
+  username: "{{ _component.kind | lower }}"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
