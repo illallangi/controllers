@@ -81,27 +81,29 @@ spec:
 {% if _component.spec.mariadb is defined
    and _component.spec.mariadb.backup is defined %}
       - env:
+          - name: PRE_COMMANDS
+            value:  unlock --remove-all
           - name: "RUN_ON_STARTUP"
             value: "true"
           - name: "BACKUP_CRON"
             value: "{{ _component.spec.mariadb.backup.schedule }}"
-          - name: "RESTIC_BACKUP_SOURCES"
+          - name: "_BACKUP_SOURCES"
             value: /var/lib/mysql
-          - name: "RESTIC_BACKUP_ARGS"
+          - name: "_BACKUP_ARGS"
             value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag mariadb
-          - name: "RESTIC_FORGET_ARGS"
+          - name: "_FORGET_ARGS"
             value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
-          - name: "RESTIC_REPOSITORY"
+          - name: "_REPOSITORY"
             value: "{{ _component.spec.mariadb.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
           - name: "TZ"
             value: "Australia/Melbourne"
-          - name: "RESTIC_PASSWORD"
-            valueFrom: {{ _component.spec.mariadb.backup.resticPassword }}
+          - name: "_PASSWORD"
+            valueFrom: {{ _component.spec.mariadb.backup.Password }}
           - name: "B2_ACCOUNT_ID"
             valueFrom: {{ _component.spec.mariadb.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.mariadb.backup.b2AccountKey }}
-        image: {{ 'IMAGE_RESTIC' | getenv }}
+        image: {{ 'IMAGE_' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
