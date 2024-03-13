@@ -103,7 +103,7 @@ spec:
             valueFrom: {{ _component.spec.mariadb.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
             valueFrom: {{ _component.spec.mariadb.backup.b2AccountKey }}
-        image: {{ 'IMAGE_' | getenv }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
