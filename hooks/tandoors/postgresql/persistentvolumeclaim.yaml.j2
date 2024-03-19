@@ -1,0 +1,21 @@
+#!/usr/local/bin/hook
+---
+component: postgresql
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Tandoor
+operation: "CreateIfNotExists"
+---
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  labels: {{ _component.metadata.labels }}
+  name: "{{ _component.metadata.name }}"
+  namespace: "{{ _component.metadata.namespace }}"
+spec:
+  accessModes:
+  - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "{{ _component.spec.postgresql.storage.resources.requests.storage }}"
+  storageClassName: "{{ _component.spec.postgresql.storage.storageClassName }}"
