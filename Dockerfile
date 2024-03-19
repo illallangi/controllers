@@ -111,6 +111,7 @@ ENV \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
   IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.3.6.8612-ls204 \
+  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:latest \
   IMAGE_REDIS=docker.io/library/redis:7.2.4 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
