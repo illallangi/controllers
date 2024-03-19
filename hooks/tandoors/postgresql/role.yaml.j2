@@ -1,0 +1,19 @@
+#!/usr/local/bin/hook
+---
+component: postgresql
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Tandoor
+---
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: "Role"
+metadata: {{ _component.metadata }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - "pods"
+  - "services"
+  verbs:
+  - "get"
+  - "list"

@@ -116,11 +116,12 @@ ENV \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
+  IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.0.2 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.0.1 \
-  IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.1.929-ls226 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \
+  IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.14 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
   IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18 \
