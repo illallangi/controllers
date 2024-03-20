@@ -1,0 +1,20 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Tandoor
+operation: CreateIfNotExists
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels: {{ _instance.metadata.labels }}
+  name: {{ _instance.metadata.name }}
+  namespace: {{ _instance.metadata.namespace }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ _instance.spec.tandoor.storage.resources.requests.storage }}
+  storageClassName: {{ _instance.spec.tandoor.storage.storageClassName }}

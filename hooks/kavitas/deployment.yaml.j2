@@ -2,7 +2,7 @@
 ---
 kinds:
 - apiVersion: illallangi.enterprises/v1alpha1
-  kind: PodFetch
+  kind: Kavita
 ---
 apiVersion: "apps/v1"
 kind: "Deployment"
@@ -16,21 +16,18 @@ spec:
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: podfetch
+        kubectl.kubernetes.io/default-container: kavita
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - env:
-        - name: SERVER_URL
-          value: "https://{{ _instance.spec.podfetch.webDomain }}/"
-        image: {{ 'IMAGE_PODFETCH' | getenv }}
-        imagePullPolicy: "Always"
+      - image: {{ 'IMAGE_KAVITA' | getenv }}
+        imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
             port: http
-        name: "podfetch"
+        name: kavita
         ports:
-        - containerPort: 8000
+        - containerPort: 5000
           name: http
         resources: {}
         startupProbe:
@@ -38,44 +35,45 @@ spec:
             port: http
           failureThreshold: 30
         volumeMounts:
-        - mountPath: "/app/db"
-          name: "persistence"
-          subPath: "app/db"
-        - mountPath: "/app/podcasts"
+        - mountPath: "/data"
           name: "data"
-          subPath: "{{ _component.spec.podfetch.data.subPath }}"
-{% if _component.spec.podfetch is defined
-   and _component.spec.podfetch.backup is defined %}
+          readOnly: true
+          subPath: "{{ _component.spec.kavita.data.subPath }}"
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% if _component.spec.kavita is defined
+   and _component.spec.kavita.backup is defined %}
       - env:
           - name: PRE_COMMANDS
             value: restic unlock --remove-all
           - name: "RUN_ON_STARTUP"
             value: "true"
           - name: "BACKUP_CRON"
-            value: "{{ _component.spec.podfetch.backup.schedule }}"
+            value: "{{ _component.spec.kavita.backup.schedule }}"
           - name: "RESTIC_BACKUP_SOURCES"
-            value: /app/db
+            value: /config
           - name: "RESTIC_BACKUP_ARGS"
-            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag podfetch
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag kavita
           - name: "RESTIC_FORGET_ARGS"
             value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
           - name: "RESTIC_REPOSITORY"
-            value: "{{ _component.spec.podfetch.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+            value: "{{ _component.spec.kavita.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
           - name: "TZ"
             value: "Australia/Melbourne"
           - name: "RESTIC_PASSWORD"
-            valueFrom: {{ _component.spec.podfetch.backup.resticPassword }}
+            valueFrom: {{ _component.spec.kavita.backup.resticPassword }}
           - name: "B2_ACCOUNT_ID"
-            valueFrom: {{ _component.spec.podfetch.backup.b2AccountId }}
+            valueFrom: {{ _component.spec.kavita.backup.b2AccountId }}
           - name: "B2_ACCOUNT_KEY"
-            valueFrom: {{ _component.spec.podfetch.backup.b2AccountKey }}
+            valueFrom: {{ _component.spec.kavita.backup.b2AccountKey }}
         image: {{ 'IMAGE_RESTIC' | getenv }}
         imagePullPolicy: IfNotPresent
         name: backup
         volumeMounts:
-        - mountPath: "/app/db"
+        - mountPath: "/config"
           name: "persistence"
-          subPath: "app/db"
+          subPath: "config"
 {% endif %}
       dnsConfig:
         options:
@@ -88,5 +86,5 @@ spec:
           claimName: "{{ _instance.metadata.name }}"
         name: "persistence"
       - persistentVolumeClaim:
-          claimName: "{{ _instance.spec.podfetch.data.name }}"
+          claimName: "{{ _instance.spec.kavita.data.name }}"
         name: "data"
