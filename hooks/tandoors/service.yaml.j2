@@ -1,0 +1,15 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Tandoor
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _instance.metadata }}
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector: {{ _instance.selector }}

@@ -121,6 +121,7 @@ ENV \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.0 \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.2.1183-ls231 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.62.0 \
+  IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.14 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
   IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18 \
