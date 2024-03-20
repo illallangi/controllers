@@ -91,41 +91,41 @@ COPY --from=shell-operator /rootfs /
 # Set environment variables
 ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.1.0 \
+  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.3.0 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
-  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.1.5 \
-  IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1-r8-ls254 \
-  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.2.2 \
+  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.2.1 \
+  IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.3.0 \
   IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.46-1_nohealthcheck \
   IMAGE_GATUS=docker.io/twinproduction/gatus:latest \
-  IMAGE_HOMEASSISTANT=lscr.io/linuxserver/homeassistant:2024.2.5-ls239 \
+  IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.3.1-ls245 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
+  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.7.14-ls30 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
-  IMAGE_MASTODON=lscr.io/linuxserver/mastodon:v4.2.5-ls73 \
+  IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls81 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
-  IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.0 \
+  IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.1 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
-  IMAGE_POSTGRES=docker.io/library/postgres:16.1 \
-  IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.3.6.8612-ls204 \
-  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:latest \
+  IMAGE_POSTGRES=docker.io/library/postgres:16.2 \
+  IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.3.6.8612-ls208 \
   IMAGE_REDIS=docker.io/library/redis:7.2.4 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
-  IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.1 \
+  IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.2 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
-  IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.0.2 \
-  IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.0.1 \
-  IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.1.929-ls226 \
-  IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.56.1 \
+  IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.0.3 \
+  IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.0 \
+  IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.2.1183-ls231 \
+  IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.62.0 \
   IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.14 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
   IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.18 \
-  IMAGE_WORDPRESS=docker.io/library/wordpress:6.4.1-apache
+  IMAGE_WORDPRESS=docker.io/library/wordpress:6.4.3-apache
 
 # Set command
 CMD ["/init"]
