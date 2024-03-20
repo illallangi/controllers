@@ -101,6 +101,7 @@ ENV \
   IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.3.1-ls245 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
+  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.7.14-ls30 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
   IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls81 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
@@ -111,14 +112,13 @@ ENV \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.2 \
   IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.3.6.8612-ls208 \
-  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.7.14-ls30 \
   IMAGE_REDIS=docker.io/library/redis:7.2.4 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.2 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
+  IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.0.3 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.0 \
-  IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.2.1183-ls231 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.62.0 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
