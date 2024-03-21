@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         build-args: |
-          hooks=tandoors
+          hooks=tandoor
         cache-from: type=gha
         cache-to: type=gha,mode=max
         context: .
