@@ -130,6 +130,27 @@ spec:
                 - storage
                 - webDomain
                 type: object
+              tailscale:
+                properties:
+                  apiToken:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
+                required:
+                - apiToken
+                type: object
             required:
             - data
             type: object
@@ -173,6 +194,7 @@ rules:
   - configmaps
   - persistentvolumeclaims
   - pods
+  - secrets
   - serviceaccounts
   - services
   verbs:
