@@ -1,0 +1,97 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Cops
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: cops
+      labels: {{ _instance.selector }}
+    spec:
+      containers:
+      - env:
+        - name: "TZ"
+          value: "Australia/Melbourne"
+        - name: "PUID"
+          value: "1061"
+        - name: "PGID"
+          value: "1061"
+        image: {{ 'IMAGE_COPS' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            port: http
+        name: cops
+        ports:
+        - containerPort: 80
+          name: http
+        resources: {}
+        startupProbe:
+          httpGet:
+            port: http
+          failureThreshold: 30
+        volumeMounts:
+        - mountPath: "/books"
+          name: "data"
+          readOnly: true
+          subPath: "{{ _component.spec.cops.data.subPath }}"
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% if _component.spec.cops is defined
+   and _component.spec.cops.backup is defined %}
+      - env:
+          - name: PRE_COMMANDS
+            value: restic unlock --remove-all
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.cops.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /config
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag cops
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.cops.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.cops.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.cops.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.cops.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/config"
+          name: "persistence"
+          subPath: "config"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.spec.cops.data.name }}"
+        name: "data"

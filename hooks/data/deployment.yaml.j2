@@ -61,13 +61,53 @@ spec:
           name: "persistence"
           subPath: "data"
 {% endif %}
+{% if _instance.spec.tailscale is defined %}
+      - args:
+        - -n
+        - -r
+        - -u
+        - {{ _instance.metadata.name }};Letmein123
+        - -s
+        - {{ _instance.metadata.name }};/{{ _instance.metadata.name }};no;no;no;{{ _instance.metadata.name }}
+        env:
+        - name: USERID
+          value: "1061"
+        - name: GROUPID
+          value: "1061"
+        image: docker.io/dperson/samba:latest
+        imagePullPolicy: IfNotPresent
+        name: samba
+        ports:
+        - containerPort: 139
+          name: netbios-ssn
+          protocol: TCP
+        - containerPort: 445
+          name: microsoft-ds
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: "/{{ _instance.metadata.name }}"
+          name: "persistence"
+          subPath: "data"
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: {{ 'IMAGE_TAILSCALE' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+{% endif %}
       dnsConfig:
         options:
           - name: ndots
             value: "1"
-      serviceAccount: "{{ _application.metadata.name }}"
-      serviceAccountName: "{{ _application.metadata.name }}"
+      serviceAccount: {{ _instance.metadata.name }}
+      serviceAccountName: {{ _instance.metadata.name }}
       volumes:
       - persistentVolumeClaim:
-          claimName: "{{ _instance.metadata.name }}"
+          claimName: {{ _instance.metadata.name }}
         name: "persistence"
