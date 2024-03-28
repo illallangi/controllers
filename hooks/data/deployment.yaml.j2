@@ -66,9 +66,9 @@ spec:
         - -n
         - -r
         - -u
-        - {{ _instance.metadata.name }};Letmein123
+        - {{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};Letmein123
         - -s
-        - {{ _instance.metadata.name }};/{{ _instance.metadata.name }};no;no;no;{{ _instance.metadata.name }}
+        - {{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};/data;no;no;no;{{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         env:
         - name: USERID
           value: "1061"
@@ -86,7 +86,7 @@ spec:
           protocol: TCP
         resources: {}
         volumeMounts:
-        - mountPath: "/{{ _instance.metadata.name }}"
+        - mountPath: "/data"
           name: "persistence"
           subPath: "data"
       - env:
