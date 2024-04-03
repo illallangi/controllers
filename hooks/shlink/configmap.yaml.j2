@@ -6,12 +6,14 @@ kinds:
 ---
 apiVersion: "v1"
 data:
-  DEFAULT_DOMAIN: "{{ _instance.spec.webDomain }}"
-  IS_HTTPS_ENABLED: "true"
   AUTO_RESOLVE_TITLES: "false"
+  DEFAULT_DOMAIN: "{{ _instance.spec.shlink.webDomain }}"
   DEFAULT_SHORT_CODES_LENGTH: "4"
-  SHORT_URL_MODE: "loose"
   DISABLE_TRACKING: "true"
+  IS_HTTPS_ENABLED: "true"
+  SHLINK_SERVER_NAME: "{{ _instance.spec.shlink.webDomain }}"
+  SHLINK_SERVER_URL: "https://{{ _instance.spec.shlink.webDomain }}"
+  SHORT_URL_MODE: "loose"
   SKIP_INITIAL_GEOLITE_DOWNLOAD: "true"
 kind: "ConfigMap"
 metadata: {{ _instance.metadata }}
