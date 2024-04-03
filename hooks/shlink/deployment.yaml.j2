@@ -97,10 +97,9 @@ spec:
       - env:
         - name: "SHLINK_SERVER_API_KEY"
           valueFrom: {{ _instance.spec.shlink.apiKey }}
-        - name: "SHLINK_SERVER_NAME"
-          value: "{{ _instance.spec.shlink.webDomain }}"
-        - name: "SHLINK_SERVER_URL"
-          value: "{{ _instance.spec.shlink.webDomain }}"
+        envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
         image: {{ 'IMAGE_SHLINKWEBCLIENT' | getenv }}
         imagePullPolicy: "IfNotPresent"
         name: "shlinkwebclient"
