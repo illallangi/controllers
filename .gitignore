@@ -141,3 +141,6 @@ debug/
 
 # Test script
 test.sh
+
+# Image manifest digests
+manifests/*.digest
