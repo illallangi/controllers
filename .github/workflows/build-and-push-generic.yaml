@@ -14,7 +14,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         flavor: prefix=v,onlatest=false
-        images: ghcr.io/${{ github.repository }}
+        images: ghcr.io/${{ github.repository_owner }}/generic-controller
         tags: type=semver,pattern={{version}},value=${{ steps.version.outputs.tag }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         build-args: |
-          hooks=adsbs
+          hooks=generic
         cache-from: type=gha
         cache-to: type=gha,mode=max
         context: .
@@ -38,7 +38,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
-name: Build and Push
+name: Build and Push Generic Controller
 on:
   push:
     tags:
