@@ -246,6 +246,31 @@ spec:
                 - password
                 - storage
                 type: object
+              tailscale:
+                properties:
+                  apiToken:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
+                  tsDomain:
+                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
+                    type: string
+                required:
+                - apiToken
+                - tsDomain
+                type: object
             required:
             - cloudflare
             - homeassistant
@@ -291,6 +316,7 @@ rules:
   - configmaps
   - persistentvolumeclaims
   - pods
+  - secrets
   - serviceaccounts
   - services
   verbs:
