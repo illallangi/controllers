@@ -104,6 +104,52 @@ spec:
         - mountPath: "/user/contents.d/init-mod-homeassistant-k8s-config"
           name: "config"
           subPath: "emptyfile"
+{% if _instance.spec.tailscale is defined %}
+      - env:
+        - name: TS_KUBE_SECRET
+          value: {{ _instance.metadata.name }}-tailscale
+        - name: TS_EXTRA_ARGS
+          value: --hostname={{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
+        - name: TS_AUTH_KEY
+          valueFrom: {{ _instance.spec.tailscale.apiToken }}
+        image: {{ 'IMAGE_TAILSCALE' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+        volumeMounts:
+        - mountPath: /tmp
+          name: persistence
+          subPath: var/run/tailscale
+      - args:
+        - -n
+        - -r
+        - -u
+        - homeassistant;Letmein123
+        - -s
+        - config;/config;no;no;no;homeassistant
+        env:
+        - name: USERID
+          value: "0"
+        - name: GROUPID
+          value: "0"
+        image: docker.io/dperson/samba:latest
+        imagePullPolicy: IfNotPresent
+        name: samba
+        ports:
+        - containerPort: 139
+          name: netbios-ssn
+          protocol: TCP
+        - containerPort: 445
+          name: microsoft-ds
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /config
+          name: persistence
+          subPath: config
+{% endif %}
 {% if _component.spec.homeassistant is defined 
    and _component.spec.homeassistant.backup is defined %}
       - env:
@@ -167,6 +213,16 @@ spec:
       - persistentVolumeClaim:
           claimName: "{{ _instance.metadata.name }}"
         name: "persistence"
+{% if _instance.spec.tailscale is defined %}
+      - name: "tailscale"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: "Caddyfile"
+                path: "Caddyfile"
+              name: "{{ _instance.metadata.name }}-tailscale"
+{% endif %}
       - name: "config"
         projected:
           sources:
