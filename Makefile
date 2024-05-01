@@ -15,7 +15,7 @@ help:
 
 clean-%:
 	@podman rmi -f ${DEV_REGISTRY}/$(*)-controller:latest || true
-	@kubectl delete -A deploy -l app.kubernetes.io/instance=generic,app.kubernetes.io/name=controller --ignore-not-found
+	@kubectl delete -A deploy -l app.kubernetes.io/instance=$(*),app.kubernetes.io/name=controller --ignore-not-found
 	@rm -f manifests/$(*)-controller.digest
 
 build-%:
@@ -23,9 +23,9 @@ build-%:
 	@podman push ${DEV_REGISTRY}/$(*)-controller:latest --digestfile=manifests/$(*)-controller.digest
 
 test-%: build-%
-	@kubectl delete -A deploy -l app.kubernetes.io/instance=generic,app.kubernetes.io/name=controller --ignore-not-found --wait || true
+	@kubectl delete -A deploy -l app.kubernetes.io/instance=$(*),app.kubernetes.io/name=controller --ignore-not-found --wait || true
 	@DIGEST=$$(cat manifests/$(*)-controller.digest) && \
 	  cat manifests/$(*)-controller.yaml | sed "s|image: .*|image: ${DEV_REGISTRY}/$(*)-controller@$${DIGEST}|" | kubectl apply -f -
 
 log-%:
-	@kubectl logs -f -n kube-system -l app.kubernetes.io/instance=generic,app.kubernetes.io/name=controller | jq -c
+	@kubectl logs -f -n kube-system -l app.kubernetes.io/instance=$(*),app.kubernetes.io/name=controller | jq -c
