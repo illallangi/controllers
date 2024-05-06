@@ -7,8 +7,23 @@ kinds:
 ---
 apiVersion: "v1"
 data:
+  rsync.sh: |-
+    #!/bin/bash
+    set -x
+    # - name: "RSYNC_SECRET_{{ _instance.metadata.name | upper | replace("-", "_") }}"
+    #   value: "data:data"
+
+    export RSYNC_GLOBAL_CONFIG_AA=""
+    export RSYNC_GLOBAL_CONFIG_GID="gid = ${GROUPID}"
+    export RSYNC_GLOBAL_CONFIG_UID="uid = ${USERID}"
+
+    export RSYNC_SECRET_{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() | upper }}="${USERNAME}:${PASSWORD}"
+
+    export RSYNC_VOLUME_CONFIG_{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() | upper }}="[{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() | lower }}]; path = /{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}; comment = {{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}; read only = no; auth users=${USERNAME};"
+
+    exec /container/scripts/entrypoint.sh rsync --no-detach --daemon --config /etc/rsyncd.conf
   samba.sh: |-
-    #!/bin/sh
+    #!/bin/bash
     set -x
     exec /usr/bin/samba.sh -n -r -u '${USERNAME};${PASSWORD}' -s '{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};/{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};no;no;no;${USERNAME}'
 kind: "ConfigMap"
