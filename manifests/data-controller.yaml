@@ -123,12 +123,91 @@ spec:
                     required:
                     - storageClassName
                     type: object
-                  webDomain:
-                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
-                    type: string
+                  user:
+                    oneOf:
+                    - required:
+                      - gid
+                      - password
+                      - uid
+                      - username
+                    - required:
+                      - secretRef
+                    properties:
+                      gid:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      password:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      secretRef:
+                        properties:
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      uid:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      username:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                    type: object
                 required:
                 - storage
-                - webDomain
+                - user
                 type: object
               tailscale:
                 properties:
@@ -148,8 +227,12 @@ spec:
                         - name
                         type: object
                     type: object
+                  tsDomain:
+                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
+                    type: string
                 required:
                 - apiToken
+                - tsDomain
                 type: object
             required:
             - data

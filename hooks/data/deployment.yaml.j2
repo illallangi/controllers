@@ -62,18 +62,40 @@ spec:
           subPath: "data"
 {% endif %}
 {% if _instance.spec.tailscale is defined %}
-      - args:
-        - -n
-        - -r
-        - -u
-        - {{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};Letmein123
-        - -s
-        - {{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};/data;no;no;no;{{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
+      - command:
+        - "/usr/local/bin/samba.sh"
         env:
+{% if _instance.spec.data.user.secretRef is defined %}
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: {{ _instance.spec.data.user.secretRef.name }}
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ _instance.spec.data.user.secretRef.name }}
         - name: USERID
-          value: "1061"
+          valueFrom:
+            secretKeyRef:
+              key: uid
+              name: {{ _instance.spec.data.user.secretRef.name }}
         - name: GROUPID
-          value: "1061"
+          valueFrom:
+            secretKeyRef:
+              key: gid
+              name: {{ _instance.spec.data.user.secretRef.name }}
+{% else %}
+        - name: USERNAME
+          valueFrom: {{ _instance.spec.data.user.username }}
+        - name: PASSWORD
+          valueFrom: {{ _instance.spec.data.user.password }}
+        - name: USERID
+          valueFrom: {{ _instance.spec.data.user.uid }}
+        - name: GROUPID
+          valueFrom: {{ _instance.spec.data.user.gid }}
+{% endif %}
         image: docker.io/dperson/samba:latest
         imagePullPolicy: IfNotPresent
         name: samba
@@ -86,14 +108,17 @@ spec:
           protocol: TCP
         resources: {}
         volumeMounts:
-        - mountPath: "/data"
+        - mountPath: "/{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}"
           name: "persistence"
           subPath: "data"
+        - mountPath: "/usr/local/bin/samba.sh"
+          name: "tailscale"
+          subPath: "samba.sh"
       - env:
         - name: TS_KUBE_SECRET
           value: {{ _instance.metadata.name }}-tailscale
         - name: TS_EXTRA_ARGS
-          value: --hostname={{ _instance.spec.data.webDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
+          value: --hostname={{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }}
         - name: TS_AUTH_KEY
           valueFrom: {{ _instance.spec.tailscale.apiToken }}
         image: {{ 'IMAGE_TAILSCALE' | getenv }}
@@ -111,3 +136,12 @@ spec:
       - persistentVolumeClaim:
           claimName: {{ _instance.metadata.name }}
         name: "persistence"
+      - name: "tailscale"
+        projected:
+          sources:
+          - configMap:
+              items:
+              - key: samba.sh
+                path: samba.sh
+                mode: 493
+              name: "{{ _instance.metadata.name }}-tailscale"
