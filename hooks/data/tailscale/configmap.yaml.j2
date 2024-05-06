@@ -1,0 +1,15 @@
+#!/usr/local/bin/hook
+---
+component: tailscale
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Data
+---
+apiVersion: "v1"
+data:
+  samba.sh: |-
+    #!/bin/sh
+    set -x
+    exec /usr/bin/samba.sh -n -r -u '${USERNAME};${PASSWORD}' -s '{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};/{{ _instance.spec.tailscale.tsDomain | regex_search('^([a-z][a-z0-9-]*)\.great-tuna\.ts\.net$', '\\1') | first() }};no;no;no;${USERNAME}'
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
