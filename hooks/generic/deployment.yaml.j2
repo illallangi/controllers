@@ -34,9 +34,26 @@ spec:
           httpGet:
             port: http
           failureThreshold: 30
+{% if _component.spec.generic.data is defined %}
+        volumeMounts:
+{%- for data in _component.spec.generic.data %}
+        - mountPath: "{{ data.path }}"
+          name: "{{ data.name }}"
+          readOnly: true
+          subPath: "{{ data.subPath}}"
+{%- endfor %}
+{%- endif %}
       dnsConfig:
         options:
           - name: ndots
             value: "1"
       serviceAccount: "{{ _instance.metadata.name }}"
       serviceAccountName: "{{ _instance.metadata.name }}"
+{% if _component.spec.generic.data is defined %}
+      volumes:
+{% for data in _component.spec.generic.data %}
+      - persistentVolumeClaim:
+          claimName: "{{ data.name }}"
+        name: "{{ data.name }}"
+{% endfor %}
+{% endif %}
