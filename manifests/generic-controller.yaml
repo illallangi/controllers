@@ -54,6 +54,20 @@ spec:
                 type: object
               generic:
                 properties:
+                  data:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        path:
+                          type: string
+                        subPath:
+                          type: string
+                      required:
+                      - name
+                      - path
+                      type: object
+                    type: array
                   image:
                     type: string
                   port:
