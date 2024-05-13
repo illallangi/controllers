@@ -102,6 +102,7 @@ ENV \
   IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.4.3-ls256 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
+  IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:24.0.4 \
   IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.0-ls33 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
   IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls85 \
