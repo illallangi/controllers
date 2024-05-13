@@ -1,0 +1,13 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: KeyCloak
+---
+apiVersion: "v1"
+data:
+  KEYCLOAK_PROXY: "edge"
+  KC_HOSTNAME_ADMIN: "{{ _instance.spec.tailscale.tsDomain }}"
+  KC_HOSTNAME_DEBUG: "true"
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}
