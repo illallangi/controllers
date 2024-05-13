@@ -3,20 +3,20 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/instance: data
+    app.kubernetes.io/instance: keycloak
     app.kubernetes.io/name: controller
-  name: datas.illallangi.enterprises
+  name: keycloaks.illallangi.enterprises
 spec:
   group: illallangi.enterprises
   names:
-    kind: Data
-    listKind: DataList
-    plural: datas
-    singular: data
+    kind: KeyCloak
+    listKind: KeyCloakList
+    plural: keycloaks
+    singular: keycloak
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.data.webDomain
+    - jsonPath: .spec.keycloak.webDomain
       name: Domain
       type: string
     name: v1alpha1
@@ -31,7 +31,103 @@ spec:
             type: object
           spec:
             properties:
-              data:
+              cloudflare:
+                properties:
+                  apiToken:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
+                required:
+                - apiToken
+                type: object
+              keycloak:
+                properties:
+                  storage:
+                    properties:
+                      resources:
+                        default:
+                          requests:
+                            storage: 16Gi
+                        properties:
+                          requests:
+                            default:
+                              storage: 16Gi
+                            properties:
+                              storage:
+                                default: 16Gi
+                                type: string
+                            type: object
+                        type: object
+                      storageClassName:
+                        type: string
+                    required:
+                    - storageClassName
+                    type: object
+                  user:
+                    oneOf:
+                    - required:
+                      - password
+                      - username
+                    - required:
+                      - secretRef
+                    properties:
+                      password:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                      secretRef:
+                        properties:
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      username:
+                        oneOf:
+                        - required:
+                          - secretKeyRef
+                        properties:
+                          secretKeyRef:
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                            - key
+                            - name
+                            type: object
+                        type: object
+                    type: object
+                required:
+                - storage
+                - user
+                type: object
+              postgresql:
                 properties:
                   backup:
                     properties:
@@ -69,14 +165,6 @@ spec:
                         type: object
                       b2repo:
                         type: string
-                      exclude:
-                        default:
-                        - src/deluge/**
-                        - obj/**
-                        - pub/**
-                        items:
-                          type: string
-                        type: array
                       resticPassword:
                         oneOf:
                         - required:
@@ -102,19 +190,35 @@ spec:
                     - b2AccountKey
                     - b2repo
                     type: object
+                  password:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
                   storage:
                     properties:
                       resources:
                         default:
                           requests:
-                            storage: 32Ti
+                            storage: 16Gi
                         properties:
                           requests:
                             default:
-                              storage: 32Ti
+                              storage: 16Gi
                             properties:
                               storage:
-                                default: 32Ti
+                                default: 16Gi
                                 type: string
                             type: object
                         type: object
@@ -123,91 +227,9 @@ spec:
                     required:
                     - storageClassName
                     type: object
-                  user:
-                    oneOf:
-                    - required:
-                      - gid
-                      - password
-                      - uid
-                      - username
-                    - required:
-                      - secretRef
-                    properties:
-                      gid:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
-                      password:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
-                      secretRef:
-                        properties:
-                          name:
-                            type: string
-                        required:
-                        - name
-                        type: object
-                      uid:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
-                      username:
-                        oneOf:
-                        - required:
-                          - secretKeyRef
-                        properties:
-                          secretKeyRef:
-                            properties:
-                              key:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                            - key
-                            - name
-                            type: object
-                        type: object
-                    type: object
                 required:
+                - password
                 - storage
-                - user
                 type: object
               tailscale:
                 properties:
@@ -235,7 +257,10 @@ spec:
                 - tsDomain
                 type: object
             required:
-            - data
+            - cloudflare
+            - keycloak
+            - postgresql
+            - tailscale
             type: object
         required:
         - apiVersion
@@ -250,23 +275,23 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/instance: data
+    app.kubernetes.io/instance: keycloak
     app.kubernetes.io/name: controller
-  name: data-controller
+  name: keycloak-controller
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/instance: data
+    app.kubernetes.io/instance: keycloak
     app.kubernetes.io/name: controller
-  name: data-controller
+  name: keycloak-controller
 rules:
 - apiGroups:
   - illallangi.enterprises
   resources:
-  - datas
+  - keycloaks
   verbs:
   - get
   - watch
@@ -315,45 +340,45 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/instance: data
+    app.kubernetes.io/instance: keycloak
     app.kubernetes.io/name: controller
-  name: data-controller
+  name: keycloak-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: data-controller
+  name: keycloak-controller
 subjects:
 - kind: ServiceAccount
-  name: data-controller
+  name: keycloak-controller
   namespace: kube-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/instance: data
+    app.kubernetes.io/instance: keycloak
     app.kubernetes.io/name: controller
-  name: data-controller
+  name: keycloak-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: data
+      app.kubernetes.io/instance: keycloak
       app.kubernetes.io/name: controller
   strategy:
     type: Recreate
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: data-controller
+        kubectl.kubernetes.io/default-container: keycloak-controller
       labels:
-        app.kubernetes.io/instance: data
+        app.kubernetes.io/instance: keycloak
         app.kubernetes.io/name: controller
     spec:
       containers:
-      - image: ghcr.io/illallangi/data-controller:latest
+      - image: ghcr.io/illallangi/keycloak-controller:latest
         imagePullPolicy: Always
-        name: data-controller
-      serviceAccount: data-controller
-      serviceAccountName: data-controller
+        name: keycloak-controller
+      serviceAccount: keycloak-controller
+      serviceAccountName: keycloak-controller
