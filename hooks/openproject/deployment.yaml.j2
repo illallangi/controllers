@@ -1,0 +1,269 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: OpenProject
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata: {{ _instance.metadata }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{ _instance.selector }}
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: openproject
+      labels: {{ _instance.selector }}
+    spec:            
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - args:
+        - bash
+        - /app/docker/prod/web
+        env:
+        - name: OPENPROJECT_DB_PASSWORD
+          valueFrom: {{ _instance.spec.postgresql.password }}
+{% if _instance.spec.openproject.user.secretRef is defined %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       key: email
+        #       name: {{ _instance.spec.openproject.user.secretRef.name }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ _instance.spec.openproject.user.secretRef.name }}
+{% else %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom: {{ _instance.spec.openproject.user.email }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom: {{ _instance.spec.openproject.user.password }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-postgresql"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-memcached"
+        image: {{ 'IMAGE_OPENPROJECT' | getenv }}
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: "/health_checks/default"
+            port: 8080
+            httpHeaders:
+              - name: Host
+                value: localhost
+        ports:
+        - containerPort: 8080
+          name: http
+        resources: {}
+        startupProbe:
+          httpGet:
+            path: "/health_checks/default"
+            port: 8080
+            httpHeaders:
+              - name: Host
+                value: localhost
+          failureThreshold: 30
+        name: openproject
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /tmp
+          name: scratch
+          subPath: openproject/tmp
+        - mountPath: /app/tmp
+          name: scratch
+          subPath: openproject/app/tmp
+        - name: "persistence"
+          mountPath: "/var/openproject/assets"
+          subPath: "var/openproject/assets"
+
+
+      - args:
+        - bash
+        # - sleep 3600
+        - /app/docker/prod/worker
+        env:
+        - name: "QUEUE"
+          value: ""
+        - name: OPENPROJECT_DB_PASSWORD
+          valueFrom: {{ _component.spec.postgresql.password }}
+{% if _component.spec.openproject.user.secretRef is defined %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       key: email
+        #       name: {{ _component.spec.openproject.user.secretRef.name }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ _component.spec.openproject.user.secretRef.name }}
+{% else %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom: {{ _component.spec.openproject.user.email }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom: {{ _component.spec.openproject.user.password }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-postgresql"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-memcached"
+        image: {{ 'IMAGE_OPENPROJECT' | getenv }}
+        imagePullPolicy: IfNotPresent
+        resources: {}
+        name: worker
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /tmp
+          name: scratch
+          subPath: worker/tmp
+        - mountPath: /app/tmp
+          name: scratch
+          subPath: worker/app/tmp
+        - name: "persistence"
+          mountPath: "/var/openproject/assets"
+          subPath: "var/openproject/assets"
+
+
+{% if _component.spec.openproject is defined
+   and _component.spec.openproject.backup is defined %}
+      - env:
+          - name: PRE_COMMANDS
+            value: restic unlock --remove-all
+          - name: "RUN_ON_STARTUP"
+            value: "true"
+          - name: "BACKUP_CRON"
+            value: "{{ _component.spec.openproject.backup.schedule }}"
+          - name: "RESTIC_BACKUP_SOURCES"
+            value: /var/openproject/assets
+          - name: "RESTIC_BACKUP_ARGS"
+            value: --verbose --host {{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local --tag openproject
+          - name: "RESTIC_FORGET_ARGS"
+            value: --keep-last 10 --keep-daily 7 --keep-weekly 5 --keep-monthly 12
+          - name: "RESTIC_REPOSITORY"
+            value: "{{ _component.spec.openproject.backup.b2repo }}:/{{ _component.metadata.namespace }}/{{ _component.metadata.name }}"
+          - name: "TZ"
+            value: "Australia/Melbourne"
+          - name: "RESTIC_PASSWORD"
+            valueFrom: {{ _component.spec.openproject.backup.resticPassword }}
+          - name: "B2_ACCOUNT_ID"
+            valueFrom: {{ _component.spec.openproject.backup.b2AccountId }}
+          - name: "B2_ACCOUNT_KEY"
+            valueFrom: {{ _component.spec.openproject.backup.b2AccountKey }}
+        image: {{ 'IMAGE_RESTIC' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: backup
+        volumeMounts:
+        - mountPath: "/var/openproject/assets"
+          name: "persistence"
+          subPath: "var/openproject/assets"
+{% endif %}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      initContainers:
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-postgresql"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-postgresql"
+        resources: {}
+      - args:
+        - "service"
+        - "{{ _instance.metadata.name }}-memcached"
+        - "--namespace {{ _instance.metadata.namespace }}"
+        image: {{ 'IMAGE_K8SWAITFOR' | getenv }}
+        imagePullPolicy: "IfNotPresent"
+        name: "init-memcached"
+        resources: {}
+      - args:
+        - bash
+        - /app/docker/prod/seeder
+        env:
+        - name: OPENPROJECT_DB_PASSWORD
+          valueFrom: {{ _instance.spec.postgresql.password }}
+{% if _instance.spec.openproject.user.secretRef is defined %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       key: email
+        #       name: {{ _instance.spec.openproject.user.secretRef.name }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ _instance.spec.openproject.user.secretRef.name }}
+{% else %}
+        # - name: OPENPROJECT_SEED_ADMIN_USER_MAIL
+        #   valueFrom: {{ _instance.spec.openproject.user.email }}
+        - name: OPENPROJECT_SEED_ADMIN_USER_PASSWORD
+          valueFrom: {{ _instance.spec.openproject.user.password }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-postgresql"
+        - configMapRef:
+            name: "{{ _instance.metadata.name }}-memcached"
+        image: {{ 'IMAGE_OPENPROJECT' | getenv }}
+        imagePullPolicy: IfNotPresent
+        name: init-seeder
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - name: "persistence"
+          mountPath: "/var/openproject/assets"
+          subPath: "var/openproject/assets"
+      serviceAccount: "{{ _instance.metadata.name }}"
+      serviceAccountName: "{{ _instance.metadata.name }}"
+      volumes:
+      - persistentVolumeClaim:
+          claimName: "{{ _instance.metadata.name }}"
+        name: "persistence"
+      - emptyDir: {}
+        name: "scratch"

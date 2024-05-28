@@ -1,0 +1,17 @@
+#!/usr/local/bin/hook
+---
+component: memcached
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: OpenProject
+---
+apiVersion: "v1"
+kind: "Service"
+metadata: {{ _component.metadata }}
+spec:
+  ports:
+  - name: memcached
+    port: 11211
+    protocol: TCP
+    targetPort: 11211
+  selector: {{ _component.selector }}

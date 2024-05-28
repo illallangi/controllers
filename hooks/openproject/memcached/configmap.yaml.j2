@@ -1,0 +1,12 @@
+#!/usr/local/bin/hook
+---
+component: memcached
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: OpenProject
+---
+apiVersion: "v1"
+data:
+  OPENPROJECT_CACHE__MEMCACHE__SERVER: "{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local:11211"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}

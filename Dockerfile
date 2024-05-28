@@ -106,6 +106,9 @@ ENV \
   IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.0-ls33 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
   IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls85 \
+  IMAGE_MEMCACHED=docker.io/library/memcached:1.6.27 \
+  IMAGE_OPENPROJECT=docker.io/openproject/community:13-slim \
+  IMAGE_WHOAMI=docker.io/traefik/whoami:latest \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \

@@ -1,0 +1,14 @@
+#!/usr/local/bin/hook
+---
+component: postgresql
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: OpenProject
+---
+apiVersion: "v1"
+data:
+  DATABASE_HOST: "{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  DATABASE_URL: "postgresql://{{ _component.kind | lower }}@{{ _component.metadata.name }}.{{ _component.metadata.namespace }}.svc.cluster.local:5432/{{ _component.kind | lower }}"
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
