@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240423
+FROM docker.io/library/debian:bookworm-20240513
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
@@ -91,43 +91,43 @@ COPY --from=shell-operator /rootfs /
 # Set environment variables
 ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.4.0 \
+  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.5.0 \
   IMAGE_CADDY=docker.io/library/caddy:2.7.6 \
-  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.4.0 \
-  IMAGE_COPS=ghcr.io/linuxserver/cops:2.5.4-ls197 \
+  IMAGE_CLOUDFLARED=ghcr.io/erisa/cloudflared:2024.5.0 \
+  IMAGE_COPS=ghcr.io/linuxserver/cops:2.7.2-ls203 \
   IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1 \
-  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.4.0 \
-  IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.46-1_nohealthcheck \
-  IMAGE_GATUS=docker.io/twinproduction/gatus:v5.10.0 \
-  IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.4.3-ls256 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.5.4 \
+  IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.48-0_nohealthcheck \
+  IMAGE_GATUS=docker.io/twinproduction/gatus:v5.11.0 \
+  IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.5.5-ls268 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
   IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:24.0.4 \
-  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.0-ls33 \
+  IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.1-ls38 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.3.2 \
-  IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls85 \
+  IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.8-ls90 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
   IMAGE_PLANEFENCE=ghcr.io/sdr-enthusiasts/docker-planefence:latest \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
   IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.2 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
   IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
-  IMAGE_POSTGRES=docker.io/library/postgres:16.2 \
-  IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.4.6.8723-ls215 \
-  IMAGE_REDIS=docker.io/library/redis:7.2.4 \
+  IMAGE_POSTGRES=docker.io/library/postgres:16.3 \
+  IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.6.0.8846-ls221 \
+  IMAGE_REDIS=docker.io/library/redis:7.2.5 \
   IMAGE_REGISTRY=docker.io/library/registry:2.8.3 \
   IMAGE_RESTIC=docker.io/mazzolino/restic:1.7.2 \
   IMAGE_RSYNC=ghcr.io/servercontainers/rsync:a3.17.2-r3.2.7 \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
-  IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.1.0 \
+  IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.1.1 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.2 \
-  IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.4.1491-ls236 \
-  IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.64.2 \
+  IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.4.1491-ls239 \
+  IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.66.3 \
   IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.17 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
   IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.20 \
-  IMAGE_WORDPRESS=docker.io/library/wordpress:6.5.2-apache
+  IMAGE_WORDPRESS=docker.io/library/wordpress:6.5.3-apache
 
 # Set command
 CMD ["/init"]
