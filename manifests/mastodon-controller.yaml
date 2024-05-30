@@ -31,27 +31,6 @@ spec:
             type: object
           spec:
             properties:
-              cloudflare:
-                properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - apiToken
-                type: object
               gid:
                 default: 1000
                 type: integer
@@ -444,7 +423,6 @@ spec:
                 default: 1000
                 type: integer
             required:
-            - cloudflare
             - mastodon
             - postgresql
             - redis

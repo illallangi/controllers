@@ -31,27 +31,6 @@ spec:
             type: object
           spec:
             properties:
-              cloudflare:
-                properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - apiToken
-                type: object
               gatus:
                 properties:
                   groups:
@@ -189,7 +168,6 @@ spec:
                 - storage
                 type: object
             required:
-            - cloudflare
             - gatus
             - postgresql
             type: object
