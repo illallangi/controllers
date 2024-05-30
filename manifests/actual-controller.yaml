@@ -121,30 +121,8 @@ spec:
                 - storage
                 - webDomain
                 type: object
-              cloudflare:
-                properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - apiToken
-                type: object
             required:
             - actual
-            - cloudflare
             type: object
         required:
         - apiVersion
