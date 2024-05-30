@@ -31,27 +31,6 @@ spec:
             type: object
           spec:
             properties:
-              cloudflare:
-                properties:
-                  apiToken:
-                    oneOf:
-                    - required:
-                      - secretKeyRef
-                    properties:
-                      secretKeyRef:
-                        properties:
-                          key:
-                            type: string
-                          name:
-                            type: string
-                        required:
-                        - key
-                        - name
-                        type: object
-                    type: object
-                required:
-                - apiToken
-                type: object
               homeassistant:
                 properties:
                   backup:
@@ -272,7 +251,6 @@ spec:
                 - tsDomain
                 type: object
             required:
-            - cloudflare
             - homeassistant
             - postgresql
             type: object
