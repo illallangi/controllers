@@ -110,7 +110,6 @@ ENV \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
   IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.2 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
-  IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.3 \
   IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.6.0.8846-ls221 \
   IMAGE_REDIS=docker.io/library/redis:7.2.5 \
