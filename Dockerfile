@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240513
+FROM docker.io/library/debian:bookworm-20240612
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
@@ -110,7 +110,6 @@ ENV \
   IMAGE_PLANEWATCH=ghcr.io/plane-watch/docker-plane-watch:latest \
   IMAGE_PLEX=ghcr.io/linuxserver/plex:1.40.2 \
   IMAGE_PODFETCH=ghcr.io/samtv12345/podfetch:latest \
-  IMAGE_PODGRAB=ghcr.io/akhilrex/podgrab:1.0.0 \
   IMAGE_POSTGRES=docker.io/library/postgres:16.3 \
   IMAGE_RADARR=ghcr.io/linuxserver/radarr:5.6.0.8846-ls221 \
   IMAGE_REDIS=docker.io/library/redis:7.2.5 \
@@ -120,6 +119,7 @@ ENV \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.1.1 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.2 \
+  IMAGE_STASH=docker.io/stashapp/stash:v0.26.0 \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.4.1491-ls239 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.66.3 \
   IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.17 \

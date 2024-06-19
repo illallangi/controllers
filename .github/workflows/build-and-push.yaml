@@ -27,8 +27,10 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
     - name: Build and push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
+        build-args: |
+          hooks=adsbs
         cache-from: type=gha
         cache-to: type=gha,mode=max
         context: .
