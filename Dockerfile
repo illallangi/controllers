@@ -119,6 +119,7 @@ ENV \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.1.1 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.2 \
+  IMAGE_STASH=docker.io/stashapp/stash:v0.26.0 \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.4.1491-ls239 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.66.3 \
   IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.17 \
