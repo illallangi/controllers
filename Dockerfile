@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240513
+FROM docker.io/library/debian:bookworm-20240612
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
