@@ -1,0 +1,78 @@
+#!/usr/local/bin/hook
+---
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Stash
+---
+apiVersion: "v1"
+data:
+  STASH_STASH: "/data/"
+  STASH_METADATA: "/stash/metadata/"
+  STASH_CACHE: "/stash/cache/"
+  STASH_GENERATED: "/stash/generated/"
+  init-config.sh: |-
+    #!/bin/sh
+    if [ ! -f /root/.stash/config.yml ]
+    then
+      cat /root/.stash/config.yml.template > /root/.stash/config.yml
+    fi
+    mkdir -p ${STASH_STASH} ${STASH_METADATA} ${STASH_CACHE} ${STASH_GENERATED}
+    cat /root/.stash/config.yml
+  config.yml.template: |-
+    # jwt_secret_key: 61f4bf54773eb9e3209b3ea750f567a66ca053d42e2594b2f7bc137b287bbdc8
+    # session_store_key: 1f41eabab9ee93d56d68e2c4196412ab63cc06fb6e4a62e763a6f2462178b31d
+    blobs_path: /root/.stash/blobs
+    blobs_storage: FILESYSTEM
+    calculate_md5: false
+    create_image_clip_from_videos: false
+    dangerous_allow_public_without_auth: "true"
+    database: /root/.stash/stash-go.sqlite
+    gallery_cover_regex: (poster|cover|folder|board)\.[^\.]+$
+    generated: ""
+    host: 0.0.0.0
+    no_proxy: localhost,127.0.0.1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
+    nobrowser: false
+    notifications_enabled: true
+    parallel_tasks: 1
+    plugins:
+      package_sources:
+      - localpath: community
+        name: Community (stable)
+        url: https://stashapp.github.io/CommunityScripts/stable/index.yml
+      settings: {}
+    plugins_path: /root/.stash/plugins
+    port: 9999
+    preview_audio: true
+    preview_exclude_end: "0"
+    preview_exclude_start: "0"
+    preview_segment_duration: 0.75
+    preview_segments: 12
+    scrapers:
+      package_sources:
+      - localpath: community
+        name: Community (stable)
+        url: https://stashapp.github.io/CommunityScrapers/stable/index.yml
+    scrapers_path: /root/.stash/scrapers
+    sequential_scanning: false
+    show_one_time_moved_notification: false
+    sound_on_preview: false
+    stash:
+    - path: /data
+      excludevideo: false
+      excludeimage: false
+    theme_color: '#202b33'
+    ui:
+      lastNoteSeen: "20240510"
+      taskDefaults:
+        scan:
+          scanGenerateClipPreviews: true
+          scanGenerateCovers: true
+          scanGenerateImagePreviews: false
+          scanGeneratePhashes: true
+          scanGeneratePreviews: true
+          scanGenerateSprites: true
+          scanGenerateThumbnails: true
+    video_file_naming_algorithm: OSHASH
+    write_image_thumbnails: true
+kind: "ConfigMap"
+metadata: {{ _instance.metadata }}
