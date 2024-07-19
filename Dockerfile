@@ -1,4 +1,4 @@
-FROM ghcr.io/flant/shell-operator:v1.4.7 as shell-operator
+FROM ghcr.io/flant/shell-operator:v1.4.10 as shell-operator
 RUN \
   mkdir -p \
     /rootfs/frameworks/shell \
@@ -65,7 +65,7 @@ RUN \
 # Install kubectl
   if [ "$(uname -m)" = "x86_64" ]; then \
     curl \
-      https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl \
+      https://dl.k8s.io/release/v1.30.3/bin/linux/amd64/kubectl \
       --location \
       --output /usr/bin/kubectl \
       --silent \
@@ -73,7 +73,7 @@ RUN \
   && \
   if [ "$(uname -m)" = "aarch64" ]; then \
     curl \
-      https://dl.k8s.io/release/v1.29.0/bin/linux/arm64/kubectl \
+      https://dl.k8s.io/release/v1.30.3/bin/linux/arm64/kubectl \
       --location \
       --output /usr/bin/kubectl \
       --silent \
