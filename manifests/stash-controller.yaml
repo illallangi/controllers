@@ -3,20 +3,20 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    app.kubernetes.io/instance: podgrab
+    app.kubernetes.io/instance: stash
     app.kubernetes.io/name: controller
-  name: podgrabs.illallangi.enterprises
+  name: stashes.illallangi.enterprises
 spec:
   group: illallangi.enterprises
   names:
-    kind: Podgrab
-    listKind: PodgrabList
-    plural: podgrabs
-    singular: podgrab
+    kind: Stash
+    listKind: StashList
+    plural: stashes
+    singular: stash
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.podgrab.webDomain
+    - jsonPath: .spec.stash.webDomain
       name: Domain
       type: string
     name: v1alpha1
@@ -31,7 +31,7 @@ spec:
             type: object
           spec:
             properties:
-              podgrab:
+              stash:
                 properties:
                   backup:
                     properties:
@@ -125,14 +125,37 @@ spec:
                     - storageClassName
                     type: object
                   webDomain:
+                    pattern: ^[a-z][a-z0-9-]*\.great-tuna\.ts\.net$
                     type: string
                 required:
                 - data
                 - storage
                 - webDomain
                 type: object
+              tailscale:
+                properties:
+                  apiToken:
+                    oneOf:
+                    - required:
+                      - secretKeyRef
+                    properties:
+                      secretKeyRef:
+                        properties:
+                          key:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - key
+                        - name
+                        type: object
+                    type: object
+                required:
+                - apiToken
+                type: object
             required:
-            - podgrab
+            - stash
+            - tailscale
             type: object
         required:
         - apiVersion
@@ -147,23 +170,23 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/instance: podgrab
+    app.kubernetes.io/instance: stash
     app.kubernetes.io/name: controller
-  name: podgrab-controller
+  name: stash-controller
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/instance: podgrab
+    app.kubernetes.io/instance: stash
     app.kubernetes.io/name: controller
-  name: podgrab-controller
+  name: stash-controller
 rules:
 - apiGroups:
   - illallangi.enterprises
   resources:
-  - podgrabs
+  - stashes
   verbs:
   - get
   - watch
@@ -174,6 +197,7 @@ rules:
   - configmaps
   - persistentvolumeclaims
   - pods
+  - secrets
   - serviceaccounts
   - services
   verbs:
@@ -211,45 +235,45 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/instance: podgrab
+    app.kubernetes.io/instance: stash
     app.kubernetes.io/name: controller
-  name: podgrab-controller
+  name: stash-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: podgrab-controller
+  name: stash-controller
 subjects:
 - kind: ServiceAccount
-  name: podgrab-controller
+  name: stash-controller
   namespace: kube-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/instance: podgrab
+    app.kubernetes.io/instance: stash
     app.kubernetes.io/name: controller
-  name: podgrab-controller
+  name: stash-controller
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: podgrab
+      app.kubernetes.io/instance: stash
       app.kubernetes.io/name: controller
   strategy:
     type: Recreate
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: podgrab-controller
+        kubectl.kubernetes.io/default-container: stash-controller
       labels:
-        app.kubernetes.io/instance: podgrab
+        app.kubernetes.io/instance: stash
         app.kubernetes.io/name: controller
     spec:
       containers:
-      - image: ghcr.io/illallangi/podgrab-controller:latest
+      - image: ghcr.io/illallangi/stash-controller:latest
         imagePullPolicy: Always
-        name: podgrab-controller
-      serviceAccount: podgrab-controller
-      serviceAccountName: podgrab-controller
+        name: stash-controller
+      serviceAccount: stash-controller
+      serviceAccountName: stash-controller

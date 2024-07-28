@@ -120,6 +120,11 @@ spec:
           valueFrom: {{ _instance.spec.mastodon.vapidPrivateKey }}
         - name: "VAPID_PUBLIC_KEY"
           valueFrom: {{ _instance.spec.mastodon.vapidPublicKey }}
+# Extra Configuration
+{% for env in _instance.spec.mastodon.extraEnv %}
+        - name: "{{ env.name }}"
+          value: "{{ env.value }}"
+{% endfor %}
         image: {{ 'IMAGE_MASTODON' | getenv }}
         imagePullPolicy: "IfNotPresent"
         livenessProbe:

@@ -97,6 +97,19 @@ spec:
                     - b2AccountKey
                     - b2repo
                     type: object
+                  extraEnv:
+                    default: []
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      required:
+                      - name
+                      - value
+                      type: object
+                    type: array
                   localDomain:
                     type: string
                   otpSecret:

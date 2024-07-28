@@ -14,7 +14,7 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         flavor: prefix=v,onlatest=false
-        images: ghcr.io/${{ github.repository_owner }}/wordpress-controller
+        images: ghcr.io/${{ github.repository_owner }}/stash-controller
         tags: type=semver,pattern={{version}},value=${{ steps.version.outputs.tag }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         build-args: |
-          hooks=wordpress
+          hooks=stash
         cache-from: type=gha
         cache-to: type=gha,mode=max
         context: .
@@ -38,7 +38,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
-name: Build and Push WordPress Controller
+name: Build and Push Stash Controller
 on:
   push:
     tags:
