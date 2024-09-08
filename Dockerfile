@@ -90,8 +90,8 @@ COPY --from=shell-operator /rootfs /
 
 # Set environment variables
 ENV \
-  S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
   IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.7.0 \
+  IMAGE_BEETS=ghcr.io/linuxserver/beets:2.0.0-ls234 \
   IMAGE_CADDY=docker.io/library/caddy:2.8.4 \
   IMAGE_COPS=ghcr.io/linuxserver/cops:2.7.2-ls210 \
   IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1 \
@@ -101,8 +101,8 @@ ENV \
   IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.7.3-ls10 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
-  IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:24.0.5 \
   IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.2-ls44 \
+  IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:24.0.5 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.4.2 \
   IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.10-ls97 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
@@ -119,15 +119,16 @@ ENV \
   IMAGE_SHIPXPLORER=ghcr.io/sdr-enthusiasts/shipxplorer:latest \
   IMAGE_SHLINK=ghcr.io/shlinkio/shlink:4.1.1 \
   IMAGE_SHLINKWEBCLIENT=ghcr.io/shlinkio/shlink-web-client:4.1.2 \
-  IMAGE_STASH=docker.io/stashapp/stash:v0.26.2 \
   IMAGE_SONARR=ghcr.io/linuxserver/sonarr:4.0.8.1874-ls248 \
+  IMAGE_STASH=docker.io/stashapp/stash:v0.26.2 \
   IMAGE_TAILSCALE=ghcr.io/tailscale/tailscale:v1.70.0 \
   IMAGE_TANDOOR=docker.io/vabene1111/recipes:1.5.18 \
   IMAGE_TOOLBOX=ghcr.io/illallangi/toolbx:latest \
   IMAGE_ULTRAFEEDER=ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest \
   IMAGE_WEBTREES=ghcr.io/nathanvaughn/webtrees:2.1.20 \
-  IMAGE_WORDPRESS=docker.io/library/wordpress:6.6.1-apache
-
+  IMAGE_WORDPRESS=docker.io/library/wordpress:6.6.1-apache \
+  S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+  
 # Set command
 CMD ["/init"]
 

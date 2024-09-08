@@ -1,0 +1,18 @@
+#!/usr/local/bin/hook
+---
+component: tailscale
+kinds:
+- apiVersion: illallangi.enterprises/v1alpha1
+  kind: Beets
+---
+apiVersion: "v1"
+data:
+  Caddyfile: |-
+    {{ _instance.spec.beets.webDomain }}:443 {
+      tls webmaster@illallangi.enterprises {
+        on_demand
+      }
+      reverse_proxy localhost:8337
+    }
+kind: "ConfigMap"
+metadata: {{ _component.metadata }}
