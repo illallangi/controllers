@@ -169,6 +169,37 @@ spec:
         - mountPath: "/usr/local/bin/rsync.sh"
           name: "tailscale"
           subPath: "rsync.sh"
+      - image: docker.io/80x86/nginx-fancyindex:latest
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: "nginx-fancyindex"
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: "/app/public/pub"
+          name: "persistence"
+          readOnly: true
+          subPath: "data/pub"
       - env:
         - name: TS_KUBE_SECRET
           value: {{ _instance.metadata.name }}-tailscale
