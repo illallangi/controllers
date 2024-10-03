@@ -82,6 +82,9 @@ spec:
                     type: array
                   image:
                     type: string
+                  imagePullPolicy:
+                    default: IfNotPresent
+                    type: string
                   port:
                     default: 80
                     type: integer
