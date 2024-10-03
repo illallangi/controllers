@@ -6,8 +6,8 @@ kinds:
 ---
 apiVersion: "v1"
 data:
-  KEYCLOAK_PROXY: "edge"
-  KC_HOSTNAME_ADMIN: "{{ _instance.spec.tailscale.tsDomain }}"
+  KC_HOSTNAME_ADMIN: "https://{{ _instance.spec.tailscale.tsDomain }}"
   KC_HOSTNAME_DEBUG: "true"
+  KC_PROXY_HEADERS: "xforwarded"
 kind: "ConfigMap"
 metadata: {{ _instance.metadata }}
