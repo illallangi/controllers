@@ -47,13 +47,13 @@ spec:
                       - path
                       type: object
                     type: array
-                  probePath:
-                    type: string
                   image:
                     type: string
                   port:
                     default: 80
                     type: integer
+                  probePath:
+                    type: string
                   webDomain:
                     type: string
                 required:
