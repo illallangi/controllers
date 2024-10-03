@@ -47,6 +47,39 @@ spec:
                       - path
                       type: object
                     type: array
+                  extraEnv:
+                    default: []
+                    items:
+                      oneOf:
+                      - required:
+                        - name
+                        - value
+                      - required:
+                        - name
+                        - valueFrom
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                        valueFrom:
+                          oneOf:
+                          - required:
+                            - secretKeyRef
+                          properties:
+                            secretKeyRef:
+                              properties:
+                                key:
+                                  type: string
+                                name:
+                                  type: string
+                              required:
+                              - key
+                              - name
+                              type: object
+                          type: object
+                      type: object
+                    type: array
                   image:
                     type: string
                   port:
