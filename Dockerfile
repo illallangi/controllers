@@ -102,7 +102,7 @@ ENV \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
   IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.2-ls44 \
-  IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:24.0.5 \
+  IMAGE_KEYCLOAK=docker.io/bitnami/keycloak:25.0.6 \
   IMAGE_MARIADB=docker.io/library/mariadb:11.4.2 \
   IMAGE_MASTODON=ghcr.io/linuxserver/mastodon:v4.2.10-ls97 \
   IMAGE_PIGALLERY=docker.io/bpatrik/pigallery2:latest \
