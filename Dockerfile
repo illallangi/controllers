@@ -1,4 +1,4 @@
-FROM ghcr.io/flant/shell-operator:v1.4.11 as shell-operator
+FROM ghcr.io/flant/shell-operator:v1.4.12 as shell-operator
 RUN \
   mkdir -p \
     /rootfs/frameworks/shell \
@@ -19,7 +19,7 @@ RUN \
     /rootfs/frameworks/shell
 
 # Main image
-FROM docker.io/library/debian:bookworm-20240904
+FROM docker.io/library/debian:bookworm-20240926
 ARG hooks=default
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 LABEL \
