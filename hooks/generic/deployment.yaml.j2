@@ -33,7 +33,7 @@ spec:
 {% endfor %}
 {% endif %}
         image: {{ _instance.spec.generic.image }}
-        imagePullPolicy: "IfNotPresent"
+        imagePullPolicy: {{ _instance.spec.generic.imagePullPolicy }}
         livenessProbe:
           httpGet:
             port: http
