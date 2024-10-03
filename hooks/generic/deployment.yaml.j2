@@ -20,11 +20,26 @@ spec:
       labels: {{ _instance.selector }}
     spec:
       containers:
-      - image: {{ _instance.spec.generic.image }}
-        imagePullPolicy: "IfNotPresent"
+      - 
+{% if _instance.spec.generic.extraEnv is defined %}
+        env:
+{% for env in _instance.spec.generic.extraEnv %}
+        - name: "{{ env.name }}"
+{% if env.valueFrom is defined %}
+          valueFrom: {{ env.valueFrom }}
+{% else %}
+          value: "{{ env.value }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+        image: {{ _instance.spec.generic.image }}
+        imagePullPolicy: {{ _instance.spec.generic.imagePullPolicy }}
         livenessProbe:
           httpGet:
             port: http
+{% if _component.spec.generic.probePath is defined %}
+            path: "{{ _component.spec.generic.probePath }}"
+{% endif %}
         name: "generic"
         ports:
         - containerPort: {{ _instance.spec.generic.port }}
@@ -33,6 +48,9 @@ spec:
         startupProbe:
           httpGet:
             port: http
+{% if _component.spec.generic.probePath is defined %}
+            path: "{{ _component.spec.generic.probePath }}"
+{% endif %}
           failureThreshold: 30
 {% if _component.spec.generic.data is defined %}
         volumeMounts:
