@@ -85,6 +85,8 @@ spec:
                   port:
                     default: 80
                     type: integer
+                  probePath:
+                    type: string
                   webDomain:
                     type: string
                 required:

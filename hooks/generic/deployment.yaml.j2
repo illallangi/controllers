@@ -37,6 +37,9 @@ spec:
         livenessProbe:
           httpGet:
             port: http
+{% if _component.spec.generic.probePath is defined %}
+            path: "{{ _component.spec.generic.probePath }}"
+{% endif %}
         name: "generic"
         ports:
         - containerPort: {{ _instance.spec.generic.port }}
@@ -45,6 +48,9 @@ spec:
         startupProbe:
           httpGet:
             port: http
+{% if _component.spec.generic.probePath is defined %}
+            path: "{{ _component.spec.generic.probePath }}"
+{% endif %}
           failureThreshold: 30
 {% if _component.spec.generic.data is defined %}
         volumeMounts:
