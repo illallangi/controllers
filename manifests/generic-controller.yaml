@@ -47,6 +47,8 @@ spec:
                       - path
                       type: object
                     type: array
+                  probePath:
+                    type: string
                   image:
                     type: string
                   port:
