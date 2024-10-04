@@ -141,6 +141,3 @@ debug/
 
 # Test script
 test.sh
-
-# Docker digests
-**/*.digest
