@@ -90,12 +90,12 @@ COPY --from=shell-operator /rootfs /
 
 # Set environment variables
 ENV \
-  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.7.0 \
-  IMAGE_BEETS=ghcr.io/linuxserver/beets:2.0.0-ls234 \
+  IMAGE_ACTUAL=ghcr.io/actualbudget/actual-server:24.10.1 \
+  IMAGE_BEETS=ghcr.io/linuxserver/beets:2.0.0-ls242 \
   IMAGE_CADDY=docker.io/library/caddy:2.8.4 \
-  IMAGE_COPS=ghcr.io/linuxserver/cops:2.7.2-ls210 \
+  IMAGE_COPS=ghcr.io/linuxserver/cops:3.3.1-ls231 \
   IMAGE_DELUGE=ghcr.io/linuxserver/deluge:2.1.1 \
-  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.7.2 \
+  IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.10.2 \
   IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.48-0_nohealthcheck \
   IMAGE_GATUS=docker.io/twinproduction/gatus:v5.11.0 \
   IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.7.3-ls10 \
