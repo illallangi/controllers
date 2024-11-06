@@ -98,7 +98,7 @@ ENV \
   IMAGE_ESPHOME=ghcr.io/esphome/esphome:2024.10.2 \
   IMAGE_FLIGHTRADAR24=ghcr.io/sdr-enthusiasts/docker-flightradar24:1.0.48-0_nohealthcheck \
   IMAGE_GATUS=docker.io/twinproduction/gatus:v5.11.0 \
-  IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.7.3-ls10 \
+  IMAGE_HOMEASSISTANT=ghcr.io/linuxserver/homeassistant:2024.10.4-ls41 \
   IMAGE_INITJINJA=ghcr.io/illallangi/init-jinja:v0.0.3 \
   IMAGE_K8SWAITFOR=ghcr.io/groundnuty/k8s-wait-for:v2.0 \
   IMAGE_KAVITA=ghcr.io/linuxserver/kavita:v0.8.2-ls44 \
