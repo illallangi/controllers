@@ -1,4 +1,4 @@
-FROM ghcr.io/flant/shell-operator:v1.4.12 as shell-operator
+FROM ghcr.io/flant/shell-operator:v1.4.16 as shell-operator
 RUN \
   mkdir -p \
     /rootfs/frameworks/shell \
