@@ -21,6 +21,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: "MULTI_SEGMENT_SLUGS_ENABLED"
+          value: "true"
         - name: "PORT"
           value: "8081"
         - name: DB_DRIVER
